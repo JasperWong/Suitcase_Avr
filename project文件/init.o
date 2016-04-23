@@ -1,0 +1,67 @@
+XL
+H 1 areas 3 global symbols
+M init.c
+A text size 8A flags 0
+dbfile ..\encoder_uart_v4\init.c
+dbfile C:\Users\acer\Desktop\ÉñÁú\encoder_uart_v4\init.c
+dbfunc e ICP_1_init 0 fV
+dbline FFFFFFFF 0
+dbline 4 0
+dbline 5 0
+dbline 6 6
+dbline 8 C
+dbline B 12
+dbline 10 1A
+dbline 11 20
+dbline 13 26
+dbline 16 2C
+dbline 17 2E
+dbline FFFFFFFE 30
+dbline 0 30
+dbfunc e ICP_2_init 32 fV
+dbline FFFFFFFF 32
+dbline 1C 32
+dbline 1D 32
+dbline 1E 38
+dbline 1F 3E
+dbline FFFFFFFE 42
+dbline 0 42
+dbfunc e ICP_3_init 44 fV
+dbline FFFFFFFF 44
+dbline 24 44
+dbline 25 44
+dbline 26 4E
+dbline 28 58
+dbline 2B 5E
+dbline 30 66
+dbline 31 70
+dbline 33 7A
+dbline 36 84
+dbline 37 86
+dbline FFFFFFFE 88
+dbline 0 88
+S _ICP_1_init Def0000
+S _ICP_2_init Def0032
+S _ICP_3_init Def0044
+T 00 00 8E B5 80 68 8E BD 8E B5 8F 7B 8E BD 8E B5
+R 00 00 00 00
+T 0E 00 84 60 8E BD 8D E1 9B EF 9D BD 8C BD 87 B7
+R 00 00 00 00
+T 1C 00 80 62 87 BF 87 B7 8B 7F 87 BF 86 B7 80 62
+R 00 00 00 00
+T 2A 00 86 BF 94 98 8C 98 08 95
+R 00 00 00 00
+T 32 00 85 B5 85 60 85 BD 87 B7 80 64 87 BF 87 E3
+R 00 00 00 00
+T 40 00 84 BD 08 95
+R 00 00 00 00
+T 44 00 80 91 8A 00 80 68 80 93 8A 00 80 91 8A 00
+R 00 00 00 00
+T 52 00 8F 7B 80 93 8A 00 8E B5 84 60 8E BD 8D E1
+R 00 00 00 00
+T 60 00 9B EF 9D BD 8C BD 80 91 7D 00 80 62 80 93
+R 00 00 00 00
+T 6E 00 7D 00 80 91 7D 00 8B 7F 80 93 7D 00 80 91
+R 00 00 00 00
+T 7C 00 7C 00 80 62 80 93 7C 00 1F 98 17 98 08 95
+R 00 00 00 00

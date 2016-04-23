@@ -1,0 +1,370 @@
+                        .module uart.c
+                        .area text(rom, con, rel)
+ 0000                   .dbfile ..\encoder_uart_v4\uart.c
+ 0000                   .dbfile C:\Users\acer\Desktop\神龙\encoder_uart_v4\uart.c
+ 0000                   .dbfunc e uart_init _uart_init fV
+ 0000           ;           baud -> R10,R11
+                        .even
+ 0000           _uart_init::
+ 0000 0E940000          xcall push_xgsetF00C
+ 0004 5801              movw R10,R16
+ 0006                   .dbline -1
+ 0006                   .dbline 15
+ 0006           ; #include"uart.h"
+ 0006           ; 
+ 0006           ; uchar num[4];
+ 0006           ; 
+ 0006           ; /*********************************************************************************************
+ 0006           ; 串口0初始化函数
+ 0006           ; 
+ 0006           ; 函数说明：串口初始化函数。
+ 0006           ; 晶振频率：CPU内部1M晶振。
+ 0006           ; 带入参数：无
+ 0006           ; 返回参数：无
+ 0006           ; *********************************************************************************************/
+ 0006           ; 
+ 0006           ; void uart_init(unsigned int baud)
+ 0006           ; {
+ 0006                   .dbline 16
+ 0006           ;    UCSR0C=0x06;             //选择UCSRC，异步模式，禁止                        
+ 0006 86E0              ldi R24,6
+ 0008 80939500          sts 149,R24
+ 000C                   .dbline 18
+ 000C           ;                             //   校验，1位停止位，8位数据位
+ 000C           ;    baud=8000000/16/baud-1;  //波特率最大为65K
+ 000C 1501              movw R2,R10
+ 000E 4424              clr R4
+ 0010 5524              clr R5
+ 0012 40E2              ldi R20,32
+ 0014 51EA              ldi R21,161
+ 0016 67E0              ldi R22,7
+ 0018 70E0              ldi R23,0
+ 001A 5A92              st -y,R5
+ 001C 4A92              st -y,R4
+ 001E 3A92              st -y,R3
+ 0020 2A92              st -y,R2
+ 0022 8A01              movw R16,R20
+ 0024 9B01              movw R18,R22
+ 0026 0E940000          xcall div32s
+ 002A 41E0              ldi R20,1
+ 002C 50E0              ldi R21,0
+ 002E 60E0              ldi R22,0
+ 0030 70E0              ldi R23,0
+ 0032 1801              movw R2,R16
+ 0034 2901              movw R4,R18
+ 0036 241A              sub R2,R20
+ 0038 350A              sbc R3,R21
+ 003A 460A              sbc R4,R22
+ 003C 570A              sbc R5,R23
+ 003E 5101              movw R10,R2
+ 0040                   .dbline 19
+ 0040           ;    UBRR0L=baud;                                                 
+ 0040 29B8              out 0x9,R2
+ 0042                   .dbline 20
+ 0042           ;    UBRR0H=baud>>8;                //设置波特率
+ 0042 232C              mov R2,R3
+ 0044 3324              clr R3
+ 0046 20929000          sts 144,R2
+ 004A                   .dbline 21
+ 004A           ;    UCSR0B=(1<<TXEN0)|(1<<RXEN0); //接收、发送使能，接收中断使能
+ 004A 88E1              ldi R24,24
+ 004C 8AB9              out 0xa,R24
+ 004E                   .dbline 23
+ 004E           ; 
+ 004E           ;    DDRE|=0X02;                    //配置TX为输出（很重要）
+ 004E 119A              sbi 0x2,1
+ 0050                   .dbline -2
+ 0050           L1:
+ 0050                   .dbline 0 ; func end
+ 0050 0C940000          xjmp pop_xgsetF00C
+ 0054                   .dbsym r baud 10 i
+ 0054                   .dbend
+ 0054                   .dbfunc e uart1_init _uart1_init fV
+ 0054           ;           baud -> R10,R11
+                        .even
+ 0054           _uart1_init::
+ 0054 0E940000          xcall push_xgsetF00C
+ 0058 5801              movw R10,R16
+ 005A                   .dbline -1
+ 005A                   .dbline 26
+ 005A           ; }
+ 005A           ; void uart1_init(unsigned int baud)
+ 005A           ; {
+ 005A                   .dbline 27
+ 005A           ;    UCSR1C=0x06;             //选择UCSRC，异步模式，禁止                        
+ 005A 86E0              ldi R24,6
+ 005C 80939D00          sts 157,R24
+ 0060                   .dbline 29
+ 0060           ;                             //   校验，1位停止位，8位数据位
+ 0060           ;    baud=8000000/16/baud-1;  //波特率最大为65K
+ 0060 1501              movw R2,R10
+ 0062 4424              clr R4
+ 0064 5524              clr R5
+ 0066 40E2              ldi R20,32
+ 0068 51EA              ldi R21,161
+ 006A 67E0              ldi R22,7
+ 006C 70E0              ldi R23,0
+ 006E 5A92              st -y,R5
+ 0070 4A92              st -y,R4
+ 0072 3A92              st -y,R3
+ 0074 2A92              st -y,R2
+ 0076 8A01              movw R16,R20
+ 0078 9B01              movw R18,R22
+ 007A 0E940000          xcall div32s
+ 007E 41E0              ldi R20,1
+ 0080 50E0              ldi R21,0
+ 0082 60E0              ldi R22,0
+ 0084 70E0              ldi R23,0
+ 0086 1801              movw R2,R16
+ 0088 2901              movw R4,R18
+ 008A 241A              sub R2,R20
+ 008C 350A              sbc R3,R21
+ 008E 460A              sbc R4,R22
+ 0090 570A              sbc R5,R23
+ 0092 5101              movw R10,R2
+ 0094                   .dbline 30
+ 0094           ;    UBRR1L=baud;                                                 
+ 0094 A0929900          sts 153,R10
+ 0098                   .dbline 31
+ 0098           ;    UBRR1H=baud>>8;                //设置波特率
+ 0098 232C              mov R2,R3
+ 009A 3324              clr R3
+ 009C 20929800          sts 152,R2
+ 00A0                   .dbline 32
+ 00A0           ;    UCSR1B=(1<<TXEN0)|(1<<RXEN0)|(1<<RXCIE0); //接收、发送使能，接收中断使能
+ 00A0 88E9              ldi R24,152
+ 00A2 80939A00          sts 154,R24
+ 00A6                   .dbline 33
+ 00A6           ;    SREG|=0x80;                    //全局中断开放
+ 00A6 7894              bset 7
+ 00A8                   .dbline 34
+ 00A8           ;    DDRD|=(1<<3);                  //配置TX为输出（很重要）
+ 00A8 8B9A              sbi 0x11,3
+ 00AA                   .dbline -2
+ 00AA           L2:
+ 00AA                   .dbline 0 ; func end
+ 00AA 0C940000          xjmp pop_xgsetF00C
+ 00AE                   .dbsym r baud 10 i
+ 00AE                   .dbend
+ 00AE                   .dbfunc e uart0_transmit _uart0_transmit fV
+ 00AE           ;              i -> R16
+                        .even
+ 00AE           _uart0_transmit::
+ 00AE                   .dbline -1
+ 00AE                   .dbline 44
+ 00AE           ; }
+ 00AE           ; /*********************************************************************************************
+ 00AE           ; 数据发送
+ 00AE           ; 
+ 00AE           ; 函数说明：数据发送，查询方式。
+ 00AE           ; 晶振频率：CPU内部1M晶振。
+ 00AE           ; 带入参数：i 发送数据，一字节。
+ 00AE           ; 返回参数：无
+ 00AE           ; *********************************************************************************************/
+ 00AE           ; void uart0_transmit(unsigned char i) {
+ 00AE           L4:
+ 00AE                   .dbline 46
+ 00AE           ; 
+ 00AE           ;       while (!(UCSR0A & (1<<UDRE0)));                                 /* 等待发送缓冲器为空                   */
+ 00AE           L5:
+ 00AE                   .dbline 46
+ 00AE 5D9B              sbis 0xb,5
+ 00B0 FECF              rjmp L4
+ 00B2           X0:
+ 00B2                   .dbline 47
+ 00B2           ;       UDR0 = i;                                                                               /* 发送数据                                                     */
+ 00B2 0CB9              out 0xc,R16
+ 00B4                   .dbline -2
+ 00B4           L3:
+ 00B4                   .dbline 0 ; func end
+ 00B4 0895              ret
+ 00B6                   .dbsym r i 16 c
+ 00B6                   .dbend
+ 00B6                   .dbfunc e sent _sent fV
+ 00B6           ;         number -> R10,R11
+                        .even
+ 00B6           _sent::
+ 00B6 AA92              st -y,R10
+ 00B8 BA92              st -y,R11
+ 00BA 5801              movw R10,R16
+ 00BC                   .dbline -1
+ 00BC                   .dbline 61
+ 00BC           ; }
+ 00BC           ; 
+ 00BC           ; /*********************************************************************************************
+ 00BC           ; 数据发送
+ 00BC           ; 
+ 00BC           ; 函数说明：数据发送，查询方式。
+ 00BC           ; 晶振频率：CPU内部1M晶振。
+ 00BC           ; 带入参数：1s内的脉冲个数
+ 00BC           ; 返回参数：无
+ 00BC           ; 串口输出: 1s内的脉冲个数   1s内转的圈数r/min  1s内转的速度m/s
+ 00BC           ; *********************************************************************************************/
+ 00BC           ; 
+ 00BC           ; void sent(int number)
+ 00BC           ; {
+ 00BC                   .dbline 62
+ 00BC           ;       uart0_transmit(number/1000);
+ 00BC 28EE              ldi R18,1000
+ 00BE 33E0              ldi R19,3
+ 00C0 8501              movw R16,R10
+ 00C2 0E940000          xcall div16s
+ 00C6 F3DF              xcall _uart0_transmit
+ 00C8                   .dbline 63
+ 00C8           ;       number = number%1000;
+ 00C8 28EE              ldi R18,1000
+ 00CA 33E0              ldi R19,3
+ 00CC 8501              movw R16,R10
+ 00CE 0E940000          xcall mod16s
+ 00D2 5801              movw R10,R16
+ 00D4                   .dbline 64
+ 00D4           ;       uart0_transmit(number/100);
+ 00D4 24E6              ldi R18,100
+ 00D6 30E0              ldi R19,0
+ 00D8 0E940000          xcall div16s
+ 00DC E8DF              xcall _uart0_transmit
+ 00DE                   .dbline 65
+ 00DE           ;       number = number%100;
+ 00DE 24E6              ldi R18,100
+ 00E0 30E0              ldi R19,0
+ 00E2 8501              movw R16,R10
+ 00E4 0E940000          xcall mod16s
+ 00E8 5801              movw R10,R16
+ 00EA                   .dbline 66
+ 00EA           ;       uart0_transmit(number/10);
+ 00EA 2AE0              ldi R18,10
+ 00EC 30E0              ldi R19,0
+ 00EE 0E940000          xcall div16s
+ 00F2 DDDF              xcall _uart0_transmit
+ 00F4                   .dbline 67
+ 00F4           ;       number = number%10;
+ 00F4 2AE0              ldi R18,10
+ 00F6 30E0              ldi R19,0
+ 00F8 8501              movw R16,R10
+ 00FA 0E940000          xcall mod16s
+ 00FE 5801              movw R10,R16
+ 0100                   .dbline 68
+ 0100           ;       uart0_transmit(number);
+ 0100 D6DF              xcall _uart0_transmit
+ 0102                   .dbline -2
+ 0102           L7:
+ 0102                   .dbline 0 ; func end
+ 0102 B990              ld R11,y+
+ 0104 A990              ld R10,y+
+ 0106 0895              ret
+ 0108                   .dbsym r number 10 I
+ 0108                   .dbend
+ 0108                   .dbfunc e uart0_str _uart0_str fV
+ 0108           ;              i -> <dead>
+ 0108           ;              p -> R16,R17
+                        .even
+ 0108           _uart0_str::
+ 0108                   .dbline -1
+ 0108                   .dbline 99
+ 0108           ;       //uart0_str("r/min:");
+ 0108           ;       //uart0_transmit(number*0.15);          //r/min
+ 0108           ;       //uart0_str("r/s:");
+ 0108           ;       //uart0_transmit(number*9/10000*pi);            //m/min
+ 0108           ; }
+ 0108           ; 
+ 0108           ; 
+ 0108           ; 
+ 0108           ; /*void sent(int number)
+ 0108           ; {
+ 0108           ;       num[0] = number/1000;
+ 0108           ;       number = number%1000;
+ 0108           ;       num[1] = number/100;
+ 0108           ;       number = number%100;
+ 0108           ;       num[2] = number/10;
+ 0108           ;       number = number%10;
+ 0108           ;       num[3] = number;
+ 0108           ;       uart0_str(num);
+ 0108           ; 
+ 0108           ;       
+ 0108           ; }*/
+ 0108           ; 
+ 0108           ; /*********************************************************************************************
+ 0108           ; 数据发送
+ 0108           ; 
+ 0108           ; 函数说明：数据发送，查询方式。
+ 0108           ; 晶振频率：CPU内部1M晶振。
+ 0108           ; 带入参数：指针，指向字符串。
+ 0108           ; 返回参数：无
+ 0108           ; *********************************************************************************************/
+ 0108           ; void uart0_str(unsigned char *p) {
+ 0108 07C0              xjmp L10
+ 010A           L12:
+ 010A                   .dbline 103
+ 010A           ;    unsigned char i;
+ 010A           ;       while (*p != 0x0d) 
+ 010A           ;           {
+ 010A           ;               while (!(UCSR0A & (1<<UDRE0)));                         /* 等待发送缓冲器为空                   */
+ 010A           L13:
+ 010A                   .dbline 103
+ 010A 5D9B              sbis 0xb,5
+ 010C FECF              rjmp L12
+ 010E           X1:
+ 010E                   .dbline 104
+ 010E           ;               UDR0 = *p;                                                                      /* 发送数据                                                     */
+ 010E F801              movw R30,R16
+ 0110 2080              ldd R2,z+0
+ 0112 2CB8              out 0xc,R2
+ 0114                   .dbline 105
+ 0114           ;               p ++;
+ 0114 0F5F              subi R16,255  ; offset = 1
+ 0116 1F4F              sbci R17,255
+ 0118                   .dbline 106
+ 0118           ;               }
+ 0118           L10:
+ 0118                   .dbline 101
+ 0118 F801              movw R30,R16
+ 011A 8081              ldd R24,z+0
+ 011C 8D30              cpi R24,13
+ 011E A9F7              brne L13
+ 0120           X2:
+ 0120                   .dbline -2
+ 0120           L8:
+ 0120                   .dbline 0 ; func end
+ 0120 0895              ret
+ 0122                   .dbsym l i 1 c
+ 0122                   .dbsym r p 16 pc
+ 0122                   .dbend
+ 0122                   .dbfunc e uart0_receive _uart0_receive fc
+                        .even
+ 0122           _uart0_receive::
+ 0122                   .dbline -1
+ 0122                   .dbline 117
+ 0122           ; }
+ 0122           ; 
+ 0122           ; /*********************************************************************************************
+ 0122           ; 数据接收
+ 0122           ; 
+ 0122           ; 函数说明：数据接收，查询方式。
+ 0122           ; 晶振频率：CPU内部1M晶振。
+ 0122           ; 带入参数：无
+ 0122           ; 返回参数：接收的数据1字节。
+ 0122           ; *********************************************************************************************/
+ 0122           ; unsigned char uart0_receive(void) {
+ 0122           L16:
+ 0122                   .dbline 119
+ 0122           ; 
+ 0122           ;       while (!(UCSR0A & (1<<RXC0)));                                  /* 等待接收数据                                 */
+ 0122           L17:
+ 0122                   .dbline 119
+ 0122 5F9B              sbis 0xb,7
+ 0124 FECF              rjmp L16
+ 0126           X3:
+ 0126                   .dbline 120
+ 0126           ;       return UDR0;                                                                            /* 获取并返回数据                               */
+ 0126 0CB1              in R16,0xc
+ 0128                   .dbline -2
+ 0128           L15:
+ 0128                   .dbline 0 ; func end
+ 0128 0895              ret
+ 012A                   .dbend
+                        .area bss(ram, con, rel)
+ 0000                   .dbfile C:\Users\acer\Desktop\神龙\encoder_uart_v4\uart.c
+ 0000           _num::
+ 0000                   .blkb 4
+ 0004                   .dbsym e num _num A[4:4]c
+ 0004           ; }

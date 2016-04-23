@@ -1,0 +1,8 @@
+#ifndef _DATA_GET_H
+#define _DATA_GET_h
+
+
+void alarm_mes();
+
+
+#endif

@@ -1,0 +1,44 @@
+XL
+H 1 areas 4 global symbols
+M data_get.c
+S _uart0_receive Ref0000
+S _data Ref0000
+A text size 4E flags 0
+dbfile ..\encoder_uart_v4\data_get.c
+dbfile C:\Users\acer\Desktop\ÉñÁú\encoder_uart_v4\data_get.c
+dbfunc e clean_data 0 fV
+dbsym r i 10 i
+dbline FFFFFFFF 0
+dbline 7 0
+dbline 9 0
+dbline A 6
+dbline 9 14
+dbline 9 18
+dbline FFFFFFFE 20
+dbline 0 20
+dbfunc e data_get 22 fV
+dbsym r n 14 i
+dbline FFFFFFFF 26
+dbline D 26
+dbline F 26
+dbline 10 2C
+dbline F 3C
+dbline F 40
+dbline FFFFFFFE 48
+dbline 0 48
+S _clean_data Def0000
+S _data_get Def0022
+T 00 00 00 27 11 27 09 C0 80 E0 90 E0 F8 01 E8 0F
+R 00 00 00 00 22 08 01 00 00 00 42 0A 01 00 00 00
+T 0E 00 F9 1F 22 24 20 82 0F 5F 1F 4F 00 3D E7 E0
+R 00 00 00 00
+T 1C 00 1E 07 98 F3 08 95
+R 00 00 00 00
+T 22 00 4A 93 5A 93 44 27 55 27 0A C0 0E 94 00 00
+R 00 00 00 00 12 0E 00 00
+T 30 00 80 E0 90 E0 FA 01 E8 0F F9 1F 00 83 4F 5F
+R 00 00 00 00 22 02 01 00 00 00 42 04 01 00 00 00
+T 3E 00 5F 4F 4F 3C E7 E0 5E 07 90 F3 59 91 49 91
+R 00 00 00 00
+T 4C 00 08 95
+R 00 00 00 00

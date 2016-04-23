@@ -1,0 +1,104 @@
+                        .module data_get.c
+                        .area text(rom, con, rel)
+ 0000                   .dbfile ..\encoder_uart_v4\data_get.c
+ 0000                   .dbfile C:\Users\acer\Desktop\ÉñÁú\encoder_uart_v4\data_get.c
+ 0000                   .dbfunc e clean_data _clean_data fV
+ 0000           ;              i -> R16,R17
+                        .even
+ 0000           _clean_data::
+ 0000                   .dbline -1
+ 0000                   .dbline 7
+ 0000           ; #include <iom128v.h>
+ 0000           ; #include "data_get.h"
+ 0000           ; #include "usart0.h"
+ 0000           ; extern unsigned char data[2000];
+ 0000           ; extern unsigned char data_rec_done_flag;
+ 0000           ; void clean_data()
+ 0000           ; {
+ 0000                   .dbline 9
+ 0000           ;   unsigned int i;
+ 0000           ;   for(i=0;i<2000;i++)
+ 0000 0027              clr R16
+ 0002 1127              clr R17
+ 0004 09C0              xjmp L5
+ 0006           L2:
+ 0006                   .dbline 10
+ 0006           ;     data[i]=0;
+ 0006 80E0              ldi R24,<_data
+ 0008 90E0              ldi R25,>_data
+ 000A F801              movw R30,R16
+ 000C E80F              add R30,R24
+ 000E F91F              adc R31,R25
+ 0010 2224              clr R2
+ 0012 2082              std z+0,R2
+ 0014           L3:
+ 0014                   .dbline 9
+ 0014 0F5F              subi R16,255  ; offset = 1
+ 0016 1F4F              sbci R17,255
+ 0018           L5:
+ 0018                   .dbline 9
+ 0018 003D              cpi R16,208
+ 001A E7E0              ldi R30,7
+ 001C 1E07              cpc R17,R30
+ 001E 98F3              brlo L2
+ 0020           X0:
+ 0020                   .dbline -2
+ 0020           L1:
+ 0020                   .dbline 0 ; func end
+ 0020 0895              ret
+ 0022                   .dbsym r i 16 i
+ 0022                   .dbend
+ 0022                   .dbfunc e data_get _data_get fV
+ 0022           ;              n -> R20,R21
+                        .even
+ 0022           _data_get::
+ 0022 4A93              st -y,R20
+ 0024 5A93              st -y,R21
+ 0026                   .dbline -1
+ 0026                   .dbline 13
+ 0026           ; }
+ 0026           ; void data_get()
+ 0026           ; {
+ 0026                   .dbline 15
+ 0026           ;   unsigned int n;
+ 0026           ;   for(n=0;n<1999;n++)
+ 0026 4427              clr R20
+ 0028 5527              clr R21
+ 002A 0AC0              xjmp L10
+ 002C           L7:
+ 002C                   .dbline 16
+ 002C           ;     data[n]=uart0_receive();
+ 002C 0E940000          xcall _uart0_receive
+ 0030 80E0              ldi R24,<_data
+ 0032 90E0              ldi R25,>_data
+ 0034 FA01              movw R30,R20
+ 0036 E80F              add R30,R24
+ 0038 F91F              adc R31,R25
+ 003A 0083              std z+0,R16
+ 003C           L8:
+ 003C                   .dbline 15
+ 003C 4F5F              subi R20,255  ; offset = 1
+ 003E 5F4F              sbci R21,255
+ 0040           L10:
+ 0040                   .dbline 15
+ 0040 4F3C              cpi R20,207
+ 0042 E7E0              ldi R30,7
+ 0044 5E07              cpc R21,R30
+ 0046 90F3              brlo L7
+ 0048           X1:
+ 0048                   .dbline -2
+ 0048           L6:
+ 0048                   .dbline 0 ; func end
+ 0048 5991              ld R21,y+
+ 004A 4991              ld R20,y+
+ 004C 0895              ret
+ 004E                   .dbsym r n 20 i
+ 004E                   .dbend
+ 004E           ; }
+ 004E           ; 
+ 004E           ; /*void data_return()
+ 004E           ; {
+ 004E           ;   unsigned int n;
+ 004E           ;   for(n=0;n<1999;n++)
+ 004E           ;     usart0_sent_char(data[n]);
+ 004E           ; }*/

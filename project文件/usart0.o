@@ -1,0 +1,36 @@
+XL
+H 1 areas 2 global symbols
+M usart0.c
+A text size 28 flags 0
+dbfile ..\encoder_uart_v4\usart0.c
+dbfile C:\Users\acer\Desktop\ÉñÁú\encoder_uart_v4\usart0.c
+dbfunc e usart0_sent_char 0 fV
+dbsym r data 10 c
+dbline FFFFFFFF 0
+dbline 6 0
+dbline 7 0
+dbline 7 0
+dbline 8 4
+dbline FFFFFFFE 6
+dbline 0 6
+dbfunc e usart0_sent_string 8 fV
+dbsym r data 14 pc
+dbline FFFFFFFF E
+dbline C E
+dbline E 10
+dbline F 10
+dbline 10 16
+dbline 11 1A
+dbline D 1A
+dbline FFFFFFFE 22
+dbline 0 22
+S _usart0_sent_string Def0008
+S _usart0_sent_char Def0000
+T 00 00 5D 9B FE CF 0C B9 08 95
+R 00 00 00 00
+T 08 00 4A 93 5A 93 A8 01 05 C0 FA 01 00 81 F5 DF
+R 00 00 00 00
+T 16 00 4F 5F 5F 4F FA 01 80 81 8D 32 B9 F7 59 91
+R 00 00 00 00
+T 24 00 49 91 08 95
+R 00 00 00 00

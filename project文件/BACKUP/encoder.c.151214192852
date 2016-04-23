@@ -1,0 +1,309 @@
+/*********
+verson3
+pidÖ±Ïß
+*******/
+#include"encoder.h"
+#include"uart.h"
+#include"pwm.h"
+#include"pid.h"
+#include<iom128v.h>
+
+#include "usart0.h"  
+#include "gps.h"
+#include <string.h>
+#include "sim900a.h"
+
+#include "lock.h"
+#include "data_get.h"
+#include "alarm_message.h"
+#include "init.h"
+/*
+*ICP_init
+*²¶×½ÊäÈëº¯Êý³õÊ¼»¯
+*´øÈë²ÎÊý:ÎÞ
+*·µ»Ø²ÎÊý:ÎÞ
+*/
+#define bell_open() PORTA|=(1<<1)
+#define bell_close() PORTA&=~(1<<1)
+#define move() p->Vsp = 100
+#define stop() p->Vsp = 0
+
+
+unsigned char data_rec_done_flag=0;
+unsigned char data[3000];
+unsigned char app_data[5]={0,1,0,0,0};
+unsigned char gps_data[200]={1};
+unsigned char uart1_receive_flag=0;
+unsigned char lock_flag=0;
+unsigned char sec_time=0;
+unsigned int  now_time=0;
+int num_pulse_1 = 0;
+int get_num_pulse_1 = 0;
+
+int num_pulse_3 = 0;
+int get_num_pulse_3 = 0;
+//int flag;
+int vino = 0;
+
+//double dError;
+//double Error;
+//double Pwm;
+
+nmea_msg gpsx; 											//GPSÐÅÏ¢
+unsigned char longitude[50];   								//´òÓ¡»º´æÆ÷
+unsigned char latitude[50]; 
+
+void Gps_Msg_Show(void)
+{
+ 	float tp;		     	 
+	tp=gpsx.longitude;	   
+	sprintf((char *)longitude,"%.3f %1c-",tp/10000,gpsx.ewhemi);	//µÃµ½¾­¶È×Ö·û´® 	
+	tp=gpsx.latitude;
+	sprintf((char *)latitude,"%.3f %1c-",tp/10000,gpsx.nshemi);	//µÃµ½Î³¶È×Ö·û´®	 
+}
+
+/*void Gps_Msg_Show(void)
+{
+ 	float tp;		     	    
+	sprintf((char *)longitude,"%.5f %1c-",gpsx.longitude/100000,gpsx.ewhemi);	//µÃµ½¾­¶È×Ö·û´® 	
+	sprintf((char *)latitude,"%.5f %1c-",gpsx.latitude/100000,gpsx.nshemi);	//µÃµ½Î³¶È×Ö·û´®	 
+}*/
+
+void delay_ms(unsigned int i) {
+
+	unsigned int a;
+	unsigned char b;
+	for (a = 0; a < i; a++) {
+		for (b = 1; b; b++) {
+			;
+			}
+		}
+}
+
+
+		
+/*
+*ICP_1ÖÐ¶Ïº¯Êý
+*¸´Î»¶¨Ê±Æ÷¼ÆÊýÖµ
+*Èç¹ûÊÇÐÂÐÅºÅ,Ôò´ò¿ªÒç³öÖÐ¶Ï£¬ÒÔÀ¹½ØÖ¡½áÊø¡£
+*Õý³£ÐÅºÅ£¬¼ì²â·ÀÖ¹Òç³ö£¬±£´æÊÕµ½Êý¾ÝÖµ¡
+*/
+
+//ÖÐ¶ÏÏòÁ¿ºÅ 12    T1ÊäÈë²¶×½ÊÂ¼þÖÐ¶Ï
+
+#pragma interrupt_handler INT_T1_ICP: 12
+void INT_T1_ICP(void)
+{
+	TIMSK &= ~(1 << TOIE1);						//¹Ø±ÕÒç³öÖÐ¶Ï	
+	num_pulse_1++;
+	
+	//TIMSK |= (1 << TOIE1);						//Òç³öÖÐ¶ÏÓÐÐ§					
+	//TIFR |= (1 << TOV1);						//Òç³öÖÐ¶Ï±êÖ¾Çå³ý		
+	//flag = TCNT1;
+	TIMSK |= (1 << TOIE1);						//´ò¿ªÒç³öÖÐ¶Ï		
+}
+
+/*
+*ICP_3ÖÐ¶Ïº¯Êý
+*¸´Î»¶¨Ê±Æ÷¼ÆÊýÖµ
+*Èç¹ûÊÇÐÂÐÅºÅ,Ôò´ò¿ªÒç³öÖÐ¶Ï£¬ÒÔÀ¹½ØÖ¡½áÊø¡£
+*Õý³£ÐÅºÅ£¬¼ì²â·ÀÖ¹Òç³ö£¬±£´æÊÕµ½Êý¾ÝÖµ¡
+*/
+
+//ÖÐ¶ÏÏòÁ¿ºÅ 12    T1ÊäÈë²¶×½ÊÂ¼þÖÐ¶Ï
+
+#pragma interrupt_handler INT_T3_ICP: 26
+void INT_T3_ICP(void)
+{
+	TIMSK &= ~(1 << TOIE1);						//¹Ø±ÕÒç³öÖÐ¶Ï	
+	num_pulse_3++;
+	
+	//TIMSK |= (1 << TOIE1);						//Òç³öÖÐ¶ÏÓÐÐ§					
+	//TIFR |= (1 << TOV1);						//Òç³öÖÐ¶Ï±êÖ¾Çå³ý		
+	//flag = TCNT1;
+	TIMSK |= (1 << TOIE1);						//´ò¿ªÒç³öÖÐ¶Ï		
+}
+
+#pragma interrupt_handler INT_T1_OV: 15
+void INT_T1_OV(void)
+{
+	TIMSK &= ~(1 << TICIE1);			//²¶×½ÖÐ¶ÏICP1Ê§ÄÜ	
+	ETIMSK &= ~(1 << TICIE3);			//²¶×½ÖÐ¶ÏICP3Ê§ÄÜ	
+	if(TCNT1 == 0)
+	{
+		vino++;
+		get_num_pulse_1 = num_pulse_1;					//È¥È¡³öÒ»ÃëÄÚICP_1²¶×½µÄÂö³åÊý
+		get_num_pulse_3 = num_pulse_3;					//È¥È¡³öÒ»ÃëÄÚICP_3²¶×½µÄÂö³åÊý
+		////////sent(get_num_pulse*3/20);
+		if(vino == 25)
+		{
+			//flag++;
+			sent((get_num_pulse_1)*5/2);
+			sent((get_num_pulse_3)*5/2);
+			//sent(get_num_pulse_1);
+			//sent(get_num_pulse_3);
+			vino = 0;
+		}
+		num_pulse_1 = 0;								//Âö³å¼ÆÊýÇåÁã
+		num_pulse_3 = 0;								//Âö³å¼ÆÊýÇåÁã
+
+		/**********
+		*µÚÒ»¸öpidµÄ³ÌÐò
+		*ÆÚÍûËÙ¶ÈÎª×Ô¶¨Òå
+		*pid¼ÆËãËùÐèpwm
+		***********/
+		p->Vpv = ((get_num_pulse_1)*5/2);		//µ±Ç°ËÙ¶È  r/min
+		////////p->Vpv = (get_num_pulse*3/20);		//µ±Ç°ËÙ¶È  r/min
+		p->Error = p->Vsp - p->Vpv;		//Æ«²î
+		p->Vse += p->Error;				//»ý·Ö 
+		p->dError = p->Vle - p->Vpe;	//µ±Ç°Î¢·Ö
+		p->Vpe = p->Vle;
+		p->Vle = p->Error;
+		p->Pwm = p->Kp * p->Error + p->Ki * p->Vse + p->Kd * p->dError;
+		
+		if((OCR3A + p->Pwm) > 255)
+		{
+			OCR3A = 255;
+		}
+		else if((OCR3A + p->Pwm) < 0)
+		{
+			OCR3A = 0;
+		}
+		else
+		{
+			OCR3A=OCR3A+p->Pwm;		//µ÷ÕûPWMÕ¼¿Õ±È£¬×ª³ÉÎ»ÖÃÊ½PIDËã·¨
+			OCR3B = OCR3A;
+		}
+		
+		/**********
+		*µÚ¶þ¸öpidµÄ³ÌÐò
+		*ÆÚÍûËÙ¶ÈÎªµÚÒ»¸öpid·µ»ØµÄÕæÊµËÙ¶È
+		*pidµ÷Õû¼õÉÙÁ½¸öµç»úËÙ¶È²î
+		***********/
+		v->Vsp = ((get_num_pulse_1)*5/2);		//ÆÚÍûÖµÈ¡µÚÒ»¸öpwm·µ»ØµÄÕæÊµËÙ¶ÈÖµ
+		v->Vpv = ((get_num_pulse_3)*5/2);		//µ±Ç°ËÙ¶È  r/min
+		////////p->Vpv = (get_num_pulse*3/20);		//µ±Ç°ËÙ¶È  r/min
+		v->Error = v->Vsp - v->Vpv;		//Æ«²î
+		v->Vse += v->Error;				//»ý·Ö 
+		v->dError = v->Vle - v->Vpe;	//µ±Ç°Î¢·Ö
+		v->Vpe = v->Vle;
+		v->Vle = v->Error;
+		v->Pwm = v->Kp * v->Error + v->Ki * v->Vse + v->Kd * v->dError;
+		
+		if((OCR3B + v->Pwm) > 255)
+		{
+			OCR3B = 255;
+		}
+		else if((OCR3B + v->Pwm) < 0)
+		{
+			OCR3B = 0;
+		}
+		else
+		{
+			OCR3B=OCR3B+v->Pwm;		//µ÷ÕûPWMÕ¼¿Õ±È£¬×ª³ÉÎ»ÖÃÊ½PIDËã·¨
+		}
+		
+		
+		
+		TCNT1 = 64285;
+	}
+	
+
+	TIMSK |= (1 << TICIE1);			//²¶×½ÖÐ¶ÏÓÐÐ§	
+	ETIMSK |= (1 << TICIE3);			//²¶×½ÖÐ¶ÏÓÐÐ§	
+
+}
+#pragma interrupt_handler stolen:11
+void stolen()
+{
+  sec_time=(sec_time+1)%40;
+  if(sec_time==0)
+    now_time++;
+  TCNT2=55;
+}
+/*
+*UART1½ÓÊÕÖÐ¶Ïº¯Êý
+*½ÓÊÕÊÖ»ú¶Ë·¢ËÍÀ´µÄÐÅºÅ
+*/
+
+#pragma interrupt_handler uart1_receive:31
+void uart1_receive()
+{
+   static unsigned char st_bit=0;
+   unsigned char n;
+   n=UDR1;
+  if((0!=st_bit)&&(uart1_receive_flag))
+     {
+	   app_data[st_bit]=n-'0';
+	   st_bit++;
+	 }
+   else  if((uart1_receive_flag)&&('s'==n)&&(0==st_bit))
+     {
+	   st_bit++;
+	 }
+   
+   if(4==st_bit)
+     {
+	   st_bit=0;
+	   uart1_receive_flag=0;
+	 }
+ 
+	
+}
+
+void main(void)
+{
+   unsigned char i;
+   unsigned int rxlen;
+	PIDInit_1();
+	PIDInit_3();
+	io_init(); 
+	t3_init();
+	ICP_1_init();
+	ICP_2_init();
+	ICP_3_init();
+	uart_init(9600);
+    uart1_init(9600);
+	while(1)
+	{    
+	     
+		 uart1_receive_flag=1;
+		 delay_ms(500);
+		 if((app_data[1])&&(0==lock_flag))//¿ªËøÓëÉÏËø
+		   {
+		     lock_close();
+			 lock_flag=1;
+		   }
+		 else if((0==app_data[1])&&(1==lock_flag))
+		   {
+		     lock_open();
+			 lock_flag=0;
+		   }
+		 
+		 if(0==app_data[2])//Æô¶¯Ç°½ø
+		   stop();
+		 if(1==app_data[2])
+		   move();
+		 
+		 if(0==app_data[3])//¶ªÊ§ÅÐ¶Ï
+		 {
+		   bell_close();
+		   now_time=0;
+		   TIMSK&=~(1<<TOIE2);//¹Ø¶¨Ê±¼ÆÊýÆ÷2Òç³öÖÐ¶Ï 
+		 }
+		 if(1==app_data[3])
+		 {
+		   TIMSK|=(1<<TOIE2);//¿ª¶¨Ê±¼ÆÊýÆ÷2Òç³öÖÐ¶Ï 
+		   bell_open();
+		    
+		 }
+		 if(10==now_time)//10Ãë±¨¾¯£¬¿ÉÉèÖÃ
+		 {
+		   alarm_mes();
+		   now_time=0;
+		  
+		   
+		 }
+		
+	}
+}

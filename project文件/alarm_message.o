@@ -1,0 +1,66 @@
+XL
+H 1 areas 9 global symbols
+M alarm_message.c
+S _Gps_Msg_Show Ref0000
+S _gpsx Ref0000
+S _sim900a_sms_test Ref0000
+S _uart0_receive Ref0000
+S _GPS_Analysis Ref0000
+S _data Ref0000
+A text size 66 flags 0
+dbfile ..\encoder_uart_v4\alarm_message.c
+dbfile C:\Users\acer\Desktop\ÉñÁú\encoder_uart_v4\alarm_message.c
+dbfunc e clean_data 0 fV
+dbsym r i 10 i
+dbline FFFFFFFF 0
+dbline F 0
+dbline 11 0
+dbline 12 6
+dbline 11 14
+dbline 11 18
+dbline FFFFFFFE 20
+dbline 0 20
+dbfunc e data_get 22 fV
+dbsym r n 14 i
+dbline FFFFFFFF 26
+dbline 16 26
+dbline 18 26
+dbline 19 2C
+dbline 18 3C
+dbline 18 40
+dbline FFFFFFFE 48
+dbline 0 48
+dbfunc e alarm_mes 4E fV
+dbsym l n 1 i
+dbline FFFFFFFF 4E
+dbline 1D 4E
+dbline 1F 4E
+dbline 20 50
+dbline 21 5C
+dbline 22 60
+dbline 23 64
+dbline FFFFFFFE 64
+dbline 0 64
+S _alarm_mes Def004E
+S _clean_data Def0000
+S _data_get Def0022
+T 00 00 00 27 11 27 09 C0 80 E0 90 E0 F8 01 E8 0F
+R 00 00 00 00 22 08 05 00 00 00 42 0A 05 00 00 00
+T 0E 00 F9 1F 22 24 20 82 0F 5F 1F 4F 07 3B EB E0
+R 00 00 00 00
+T 1C 00 1E 07 98 F3 08 95
+R 00 00 00 00
+T 22 00 4A 93 5A 93 44 27 55 27 0A C0 0E 94 00 00
+R 00 00 00 00 12 0E 03 00
+T 30 00 80 E0 90 E0 FA 01 E8 0F F9 1F 00 83 4F 5F
+R 00 00 00 00 22 02 05 00 00 00 42 04 05 00 00 00
+T 3E 00 5F 4F 47 3B EB E0 5E 07 90 F3 59 91 49 91
+R 00 00 00 00
+T 4C 00 08 95
+R 00 00 00 00
+T 4E 00 E9 DF 20 E0 30 E0
+R 00 00 00 00 22 04 05 00 00 00 42 06 05 00 00 00
+T 54 00 00 E0 10 E0
+R 00 00 00 00 22 02 01 00 00 00 42 04 01 00 00 00
+T 58 00 0E 94 00 00 0E 94 00 00 0E 94 00 00 CD CF
+R 00 00 00 00 12 04 04 00 12 08 00 00 12 0C 02 00

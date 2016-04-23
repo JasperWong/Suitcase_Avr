@@ -1,0 +1,1 @@
+encoder.o pwm.o uart.o alarm_message.o lock.o init.o usart0.o sim900a.o gps.o 

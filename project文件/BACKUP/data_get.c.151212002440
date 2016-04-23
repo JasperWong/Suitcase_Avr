@@ -1,0 +1,64 @@
+#include <iom128v.h>
+extern unsigned char data[500];
+extern unsigned char data_rec_done_flag;
+void data_get()
+{
+  unsigned char data_bit_flag=0;
+  unsigned char n;
+ while(0==data_rec_done_flag)
+ {
+   n=uart0_receive();
+   if(data_bit_flag>4)
+    {
+	  data[data_bit_flag]=n;
+	  data_bit_flag++;
+	  if(0X0D==n)
+	    {
+	      data_bit_flag=0;
+		  data_rec_done_flag=1;
+		  uart0_str(&data[0]);
+		}
+	}
+   if('C'==n)
+    {
+	  if(4==data_bit_flag)
+	  {
+	    data_bit_flag++;
+	    data[4]=n;
+      }
+	  else data_bit_flag=0;
+	}
+   if('M'==n)
+    {
+	  if(3==data_bit_flag)
+	  {
+	    data_bit_flag++;
+	    data[3]=n;
+      }
+	  else data_bit_flag=0;
+	}
+  if('R'==n)
+    {
+	  if(2==data_bit_flag)
+	  {
+	    data_bit_flag++;
+	    data[2]=n;
+      }
+	  else data_bit_flag=0;
+	}
+  if('P'==n)
+    {
+	  if(1==data_bit_flag)
+	  {
+	    data_bit_flag++;
+	    data[1]=n;
+      }
+	  else data_bit_flag=0;
+	}
+  if('G'==n)
+    {
+	  data_bit_flag++;
+	  data[0]=n;
+	}
+  }
+}

@@ -1,0 +1,17 @@
+#include <iom128v.h>
+#include "data_get.h"
+extern unsigned char data[500];
+extern unsigned char data_rec_done_flag;
+void clean_data()
+{
+  unsigned int i;
+  for(i=0;i<500;i++)
+    data[i]=0;
+}
+void data_get()
+{
+  unsigned int n;
+  for(n=0;n<499;n++)
+    data[n]=uart0_receive();
+ 
+}

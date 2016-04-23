@@ -1,0 +1,32 @@
+#include <iom128v.h>
+#include <string.h>
+#include "usart0.h"
+
+void usart0_init(unsigned int baudrate)
+{
+	unsigned int ubrr;
+	ubrr = 8000000/16/baudrate-1;
+   
+	UCSR0C = 0x06;
+	UBRR0L = ubrr;					     	  
+	UBRR0H = ubrr>>8;
+	UCSR0B = (1<<TXEN0)|(1<<RXEN0)|(1<<RXCIE0) ;
+	SREG |= 0x80;
+	DDRE |= 0X02;
+}
+
+void usart0_sent_char(unsigned char data)
+{
+	while(!(UCSR0A&(1<<UDRE0))) ;
+	UDR0 = data;
+}
+
+void usart0_sent_string(unsigned char *data)
+{
+	while(*data!=',')
+	{
+		usart0_sent_char(*data);
+		data++;
+	}
+}
+

@@ -1,0 +1,1288 @@
+                        .module gps.c
+                        .area text(rom, con, rel)
+ 0000                   .dbfile ..\encoder_uart_v4\gps.c
+ 0000                   .dbfile C:\Users\acer\Desktop\神龙\encoder_uart_v4\gps.c
+ 0000                   .dbfunc e NMEA_Comma_Pos _NMEA_Comma_Pos fc
+ 0000           ;              p -> R10,R11
+ 0000           ;             cx -> R18
+ 0000           ;            buf -> R16,R17
+                        .even
+ 0000           _NMEA_Comma_Pos::
+ 0000 AA92              st -y,R10
+ 0002 BA92              st -y,R11
+ 0004                   .dbline -1
+ 0004                   .dbline 13
+ 0004           ; #include "gps.h"                                                                                                         
+ 0004           ; #include "stdio.h"     
+ 0004           ; #include "stdarg.h"    
+ 0004           ; #include "string.h"    
+ 0004           ; #include "math.h"
+ 0004           ; #include <iom128v.h>
+ 0004           ;                                         
+ 0004           ; unsigned char n;
+ 0004           ; unsigned long du,fen,miao;
+ 0004           ; float doc;
+ 0004           ; 
+ 0004           ; unsigned char NMEA_Comma_Pos(unsigned char *buf,unsigned char cx)
+ 0004           ; {                         
+ 0004                   .dbline 14
+ 0004           ;       unsigned char *p=buf;
+ 0004 5801              movw R10,R16
+ 0006 14C0              xjmp L11
+ 0008           L10:
+ 0008                   .dbline 16
+ 0008           ;       while(cx)
+ 0008           ;       {                
+ 0008                   .dbline 17
+ 0008           ;               if(*buf=='*'||*buf<' '||*buf>'z')return 0XFF;//遇到'*'或者非法字符,则不存在第cx个逗号
+ 0008 F801              movw R30,R16
+ 000A 2080              ldd R2,z+0
+ 000C 3324              clr R3
+ 000E 822D              mov R24,R2
+ 0010 8A32              cpi R24,42
+ 0012 29F0              breq L16
+ 0014           X0:
+ 0014 8032              cpi R24,32
+ 0016 18F0              brlo L16
+ 0018           X1:
+ 0018 8AE7              ldi R24,122
+ 001A 8215              cp R24,R2
+ 001C 10F4              brsh L13
+ 001E           X2:
+ 001E           L16:
+ 001E                   .dbline 17
+ 001E 0FEF              ldi R16,255
+ 0020 0BC0              xjmp L9
+ 0022           L13:
+ 0022                   .dbline 18
+ 0022           ;               if(*buf==',')cx--;
+ 0022 F801              movw R30,R16
+ 0024 8081              ldd R24,z+0
+ 0026 8C32              cpi R24,44
+ 0028 09F4              brne L17
+ 002A           X3:
+ 002A                   .dbline 18
+ 002A 2A95              dec R18
+ 002C           L17:
+ 002C                   .dbline 19
+ 002C           ;               buf++;
+ 002C 0F5F              subi R16,255  ; offset = 1
+ 002E 1F4F              sbci R17,255
+ 0030                   .dbline 20
+ 0030           ;       }
+ 0030           L11:
+ 0030                   .dbline 15
+ 0030 2223              tst R18
+ 0032 51F7              brne L10
+ 0034           X4:
+ 0034                   .dbline 21
+ 0034           ;       return buf-p;    
+ 0034 0A19              sub R16,R10
+ 0036 1B09              sbc R17,R11
+ 0038                   .dbline -2
+ 0038           L9:
+ 0038                   .dbline 0 ; func end
+ 0038 B990              ld R11,y+
+ 003A A990              ld R10,y+
+ 003C 0895              ret
+ 003E                   .dbsym r p 10 pc
+ 003E                   .dbsym r cx 18 c
+ 003E                   .dbsym r buf 16 pc
+ 003E                   .dbend
+ 003E                   .dbfunc e NMEA_Pow _NMEA_Pow fl
+ 003E           ;         result -> y+0
+ 003E           ;              k -> R10
+ 003E           ;              n -> R12
+                        .even
+ 003E           _NMEA_Pow::
+ 003E 0E940000          xcall push_xgsetF03C
+ 0042 C02E              mov R12,R16
+ 0044 2497              sbiw R28,4
+ 0046                   .dbline -1
+ 0046                   .dbline 26
+ 0046           ; }
+ 0046           ; //10^n函数
+ 0046           ; //返回值:10^n次方.
+ 0046           ; unsigned long NMEA_Pow(unsigned char n)
+ 0046           ; {
+ 0046                   .dbline 27
+ 0046           ;       unsigned long result=1; 
+ 0046 81E0              ldi R24,1
+ 0048 8883              std y+0,R24
+ 004A 80E0              ldi R24,0
+ 004C 8983              std y+1,R24
+ 004E 8A83              std y+2,R24
+ 0050 8B83              std y+3,R24
+ 0052                   .dbline 29
+ 0052           ;       unsigned char k; 
+ 0052           ;       for(k=0;k<n;k++)result*=10;    
+ 0052 AA24              clr R10
+ 0054 15C0              xjmp L23
+ 0056           L20:
+ 0056                   .dbline 29
+ 0056 2880              ldd R2,y+0
+ 0058 3980              ldd R3,y+1
+ 005A 4A80              ldd R4,y+2
+ 005C 5B80              ldd R5,y+3
+ 005E 4AE0              ldi R20,10
+ 0060 50E0              ldi R21,0
+ 0062 60E0              ldi R22,0
+ 0064 70E0              ldi R23,0
+ 0066 5A92              st -y,R5
+ 0068 4A92              st -y,R4
+ 006A 3A92              st -y,R3
+ 006C 2A92              st -y,R2
+ 006E 8A01              movw R16,R20
+ 0070 9B01              movw R18,R22
+ 0072 0E940000          xcall empy32u
+ 0076 0883              std y+0,R16
+ 0078 1983              std y+1,R17
+ 007A 2A83              std y+2,R18
+ 007C 3B83              std y+3,R19
+ 007E           L21:
+ 007E                   .dbline 29
+ 007E A394              inc R10
+ 0080           L23:
+ 0080                   .dbline 29
+ 0080 AC14              cp R10,R12
+ 0082 48F3              brlo L20
+ 0084           X5:
+ 0084                   .dbline 30
+ 0084           ;       return result;
+ 0084 0881              ldd R16,y+0
+ 0086 1981              ldd R17,y+1
+ 0088 2A81              ldd R18,y+2
+ 008A 3B81              ldd R19,y+3
+ 008C                   .dbline -2
+ 008C           L19:
+ 008C                   .dbline 0 ; func end
+ 008C 2496              adiw R28,4
+ 008E 0C940000          xjmp pop_xgsetF03C
+ 0092                   .dbsym l result 0 l
+ 0092                   .dbsym r k 10 c
+ 0092                   .dbsym r n 12 c
+ 0092                   .dbend
+ 0092                   .dbfunc e NMEA_Str2num _NMEA_Str2num fc
+ 0092           ;            res -> R10
+ 0092           ;           flen -> y+12
+ 0092           ;           mask -> R14
+ 0092           ;              t -> y+0
+ 0092           ;           ilen -> y+11
+ 0092           ;              p -> y+9
+ 0092           ;              i -> R14
+ 0092           ;         length -> y+27
+ 0092           ;             dx -> y+25
+ 0092           ;            buf -> y+23
+                        .even
+ 0092           _NMEA_Str2num::
+ 0092 0E940000          xcall push_arg4
+ 0096 0E940000          xcall push_xgsetF0FC
+ 009A 2D97              sbiw R28,13
+ 009C                   .dbline -1
+ 009C                   .dbline 38
+ 009C           ; }
+ 009C           ; 
+ 009C           ; //str转换为数字,以','或者'*'结束
+ 009C           ; //buf:数字存储区
+ 009C           ; //dx:小数点位数,返回给调用函数
+ 009C           ; //返回值:转换后的数值
+ 009C           ; unsigned char NMEA_Str2num(unsigned char *buf,unsigned char *dx,unsigned char length)
+ 009C           ; {
+ 009C                   .dbline 39
+ 009C           ;       unsigned char *p=buf,t[9];
+ 009C 0F88              ldd R0,y+23
+ 009E 188C              ldd R1,y+24
+ 00A0 1A86              std y+10,R1
+ 00A2 0986              std y+9,R0
+ 00A4                   .dbline 40
+ 00A4           ;       unsigned char ilen=0,flen=0,i;
+ 00A4 0024              clr R0
+ 00A6 0B86              std y+11,R0
+ 00A8                   .dbline 40
+ 00A8 0C86              std y+12,R0
+ 00AA                   .dbline 41
+ 00AA           ;       unsigned char mask=0;
+ 00AA EE24              clr R14
+ 00AC                   .dbline 42
+ 00AC           ;       unsigned char res=0;
+ 00AC AA24              clr R10
+ 00AE 3AC0              xjmp L26
+ 00B0           L25:
+ 00B0                   .dbline 45
+ 00B0           ; 
+ 00B0           ;       while(1) //得到整数和小数的长度
+ 00B0           ;       {
+ 00B0                   .dbline 46
+ 00B0           ;               if(*p==','||(*p=='*'))break;//遇到结束了
+ 00B0 E985              ldd R30,y+9
+ 00B2 FA85              ldd R31,y+10
+ 00B4 2080              ldd R2,z+0
+ 00B6 3324              clr R3
+ 00B8 822D              mov R24,R2
+ 00BA 8C32              cpi R24,44
+ 00BC 11F0              breq L30
+ 00BE           X6:
+ 00BE 8A32              cpi R24,42
+ 00C0 09F4              brne L28
+ 00C2           X7:
+ 00C2           L30:
+ 00C2                   .dbline 46
+ 00C2 31C0              xjmp L27
+ 00C4           L28:
+ 00C4                   .dbline 47
+ 00C4           ;               if(*p=='.')mask=1;//遇到小数点了
+ 00C4 E985              ldd R30,y+9
+ 00C6 FA85              ldd R31,y+10
+ 00C8 8081              ldd R24,z+0
+ 00CA 8E32              cpi R24,46
+ 00CC 19F4              brne L31
+ 00CE           X8:
+ 00CE                   .dbline 47
+ 00CE EE24              clr R14
+ 00D0 E394              inc R14
+ 00D2 0EC0              xjmp L32
+ 00D4           L31:
+ 00D4                   .dbline 48
+ 00D4           ;               else if(*p>'9'||(*p<'0'))       //有非法字符
+ 00D4 E985              ldd R30,y+9
+ 00D6 FA85              ldd R31,y+10
+ 00D8 2080              ldd R2,z+0
+ 00DA 3324              clr R3
+ 00DC 89E3              ldi R24,57
+ 00DE 8215              cp R24,R2
+ 00E0 18F0              brlo L35
+ 00E2           X9:
+ 00E2 822D              mov R24,R2
+ 00E4 8033              cpi R24,48
+ 00E6 20F4              brsh L33
+ 00E8           X10:
+ 00E8           L35:
+ 00E8                   .dbline 49
+ 00E8           ;               {       
+ 00E8                   .dbline 50
+ 00E8           ;                       ilen=0;
+ 00E8 0024              clr R0
+ 00EA 0B86              std y+11,R0
+ 00EC                   .dbline 51
+ 00EC           ;                       flen=0;
+ 00EC 0C86              std y+12,R0
+ 00EE                   .dbline 52
+ 00EE           ;                       break;
+ 00EE 1BC0              xjmp L27
+ 00F0           L33:
+ 00F0           L32:
+ 00F0                   .dbline 54
+ 00F0           ;               }
+ 00F0           ;               if(*p>'0'&&*p<'9')
+ 00F0 E985              ldd R30,y+9
+ 00F2 FA85              ldd R31,y+10
+ 00F4 C080              ldd R12,z+0
+ 00F6 DD24              clr R13
+ 00F8 80E3              ldi R24,48
+ 00FA 8C15              cp R24,R12
+ 00FC 70F4              brsh L36
+ 00FE           X11:
+ 00FE 8C2D              mov R24,R12
+ 0100 8933              cpi R24,57
+ 0102 58F4              brsh L36
+ 0104           X12:
+ 0104                   .dbline 55
+ 0104           ;               {
+ 0104                   .dbline 56
+ 0104           ;                if(mask==1)flen++;
+ 0104 8E2D              mov R24,R14
+ 0106 8130              cpi R24,1
+ 0108 19F4              brne L38
+ 010A           X13:
+ 010A                   .dbline 56
+ 010A 0C84              ldd R0,y+12
+ 010C 0394              inc R0
+ 010E 0C86              std y+12,R0
+ 0110           L38:
+ 0110                   .dbline 57
+ 0110           ;                if(mask==0)ilen++;
+ 0110 EE20              tst R14
+ 0112 19F4              brne L40
+ 0114           X14:
+ 0114                   .dbline 57
+ 0114 0B84              ldd R0,y+11
+ 0116 0394              inc R0
+ 0118 0B86              std y+11,R0
+ 011A           L40:
+ 011A                   .dbline 58
+ 011A           ;               }
+ 011A           L36:
+ 011A                   .dbline 59
+ 011A           ;               p++;
+ 011A 8985              ldd R24,y+9
+ 011C 9A85              ldd R25,y+10
+ 011E 0196              adiw R24,1
+ 0120 9A87              std y+10,R25
+ 0122 8987              std y+9,R24
+ 0124                   .dbline 60
+ 0124           ;       }
+ 0124           L26:
+ 0124                   .dbline 44
+ 0124 C5CF              xjmp L25
+ 0126           L27:
+ 0126                   .dbline 61
+ 0126           ;       ilen=length;
+ 0126 0B8C              ldd R0,y+27
+ 0128 0B86              std y+11,R0
+ 012A                   .dbline 62
+ 012A           ;       for(i=0;i<ilen;i++)     //得到整数部分数据
+ 012A EE24              clr R14
+ 012C 0EC0              xjmp L45
+ 012E           L42:
+ 012E                   .dbline 63
+ 012E           ;       {
+ 012E                   .dbline 64
+ 012E           ;               t[i]=buf[i];
+ 012E EE2D              mov R30,R14
+ 0130 FF27              clr R31
+ 0132 0F88              ldd R0,y+23
+ 0134 188C              ldd R1,y+24
+ 0136 E00D              add R30,R0
+ 0138 F11D              adc R31,R1
+ 013A 2080              ldd R2,z+0
+ 013C CE01              movw R24,R28
+ 013E EE2D              mov R30,R14
+ 0140 FF27              clr R31
+ 0142 E80F              add R30,R24
+ 0144 F91F              adc R31,R25
+ 0146 2082              std z+0,R2
+ 0148                   .dbline 65
+ 0148           ;       }
+ 0148           L43:
+ 0148                   .dbline 62
+ 0148 E394              inc R14
+ 014A           L45:
+ 014A                   .dbline 62
+ 014A 0B84              ldd R0,y+11
+ 014C E014              cp R14,R0
+ 014E 78F3              brlo L42
+ 0150           X15:
+ 0150                   .dbline 66
+ 0150           ;       *dx=3;                  //小数点位数
+ 0150 83E0              ldi R24,3
+ 0152 E98D              ldd R30,y+25
+ 0154 FA8D              ldd R31,y+26
+ 0156 8083              std z+0,R24
+ 0158                   .dbline 67
+ 0158           ;       for(i=0;i<3;i++)        //得到小数部分数据
+ 0158 EE24              clr R14
+ 015A 17C0              xjmp L49
+ 015C           L46:
+ 015C                   .dbline 68
+ 015C           ;       {  
+ 015C                   .dbline 69
+ 015C           ;               t[i+ilen]=buf[i+1+ilen];
+ 015C 2B84              ldd R2,y+11
+ 015E 3324              clr R3
+ 0160 EE2D              mov R30,R14
+ 0162 FF27              clr R31
+ 0164 3196              adiw R30,1
+ 0166 E20D              add R30,R2
+ 0168 F31D              adc R31,R3
+ 016A 0F88              ldd R0,y+23
+ 016C 188C              ldd R1,y+24
+ 016E E00D              add R30,R0
+ 0170 F11D              adc R31,R1
+ 0172 2080              ldd R2,z+0
+ 0174 3B84              ldd R3,y+11
+ 0176 4424              clr R4
+ 0178 EE2D              mov R30,R14
+ 017A FF27              clr R31
+ 017C E30D              add R30,R3
+ 017E F41D              adc R31,R4
+ 0180 CE01              movw R24,R28
+ 0182 E80F              add R30,R24
+ 0184 F91F              adc R31,R25
+ 0186 2082              std z+0,R2
+ 0188                   .dbline 70
+ 0188           ;       }  
+ 0188           L47:
+ 0188                   .dbline 67
+ 0188 E394              inc R14
+ 018A           L49:
+ 018A                   .dbline 67
+ 018A 8E2D              mov R24,R14
+ 018C 8330              cpi R24,3
+ 018E 30F3              brlo L46
+ 0190           X16:
+ 0190                   .dbline 71
+ 0190           ;       t[length+3]='\0';
+ 0190 CE01              movw R24,R28
+ 0192 0396              adiw R24,3
+ 0194 EB8D              ldd R30,y+27
+ 0196 FF27              clr R31
+ 0198 E80F              add R30,R24
+ 019A F91F              adc R31,R25
+ 019C 2224              clr R2
+ 019E 2082              std z+0,R2
+ 01A0                   .dbline 75
+ 01A0           ;       //usart0_sent_string((char*)t);
+ 01A0           ;       //res=atoi(t);
+ 01A0           ;       
+ 01A0           ;       if(length+3==8)
+ 01A0 8B8D              ldd R24,y+27
+ 01A2 8D5F              subi R24,253    ; addi 3
+ 01A4 8830              cpi R24,8
+ 01A6 09F0              breq X19
+ 01A8 B9C0              xjmp L51
+ 01AA           X19:
+ 01AA           X17:
+ 01AA                   .dbline 76
+ 01AA           ;       {
+ 01AA                   .dbline 77
+ 01AA           ;               du=(t[0]-'0')*100+(t[1]-'0')*10+(t[2]-'0');
+ 01AA 1981              ldd R17,y+1
+ 01AC 0AE0              ldi R16,10
+ 01AE 0103              mulsu R16,R17
+ 01B0 C001              movw R24,R0
+ 01B2 805E              subi R24,224
+ 01B4 9140              sbci R25,1
+ 01B6 1881              ldd R17,y+0
+ 01B8 04E6              ldi R16,100
+ 01BA 0103              mulsu R16,R17
+ 01BC F001              movw R30,R0
+ 01BE E05C              subi R30,192
+ 01C0 F241              sbci R31,18
+ 01C2 E80F              add R30,R24
+ 01C4 F91F              adc R31,R25
+ 01C6 8A81              ldd R24,y+2
+ 01C8 9927              clr R25
+ 01CA C097              sbiw R24,48
+ 01CC E80F              add R30,R24
+ 01CE F91F              adc R31,R25
+ 01D0 1F01              movw R2,R30
+ 01D2 4424              clr R4
+ 01D4 37FC              sbrc R3,7
+ 01D6 4094              com R4
+ 01D8 5524              clr R5
+ 01DA 47FC              sbrc R4,7
+ 01DC 5094              com R5
+ 01DE 30920D00          sts _du+1,R3
+ 01E2 20920C00          sts _du,R2
+ 01E6 50920F00          sts _du+2+1,R5
+ 01EA 40920E00          sts _du+2,R4
+ 01EE                   .dbline 78
+ 01EE           ;               fen=(t[3]-'0')*10+(t[4]-'0');
+ 01EE 1B81              ldd R17,y+3
+ 01F0 0AE0              ldi R16,10
+ 01F2 0103              mulsu R16,R17
+ 01F4 C001              movw R24,R0
+ 01F6 805E              subi R24,224
+ 01F8 9140              sbci R25,1
+ 01FA EC81              ldd R30,y+4
+ 01FC FF27              clr R31
+ 01FE F097              sbiw R30,48
+ 0200 8E0F              add R24,R30
+ 0202 9F1F              adc R25,R31
+ 0204 1C01              movw R2,R24
+ 0206 4424              clr R4
+ 0208 37FC              sbrc R3,7
+ 020A 4094              com R4
+ 020C 5524              clr R5
+ 020E 47FC              sbrc R4,7
+ 0210 5094              com R5
+ 0212 30920900          sts _fen+1,R3
+ 0216 20920800          sts _fen,R2
+ 021A 50920B00          sts _fen+2+1,R5
+ 021E 40920A00          sts _fen+2,R4
+ 0222                   .dbline 79
+ 0222           ;               miao=(t[5]-'0')*100+(t[6]-'0')*10+(t[7]-'0');
+ 0222 1E81              ldd R17,y+6
+ 0224 0103              mulsu R16,R17
+ 0226 C001              movw R24,R0
+ 0228 805E              subi R24,224
+ 022A 9140              sbci R25,1
+ 022C 1D81              ldd R17,y+5
+ 022E 04E6              ldi R16,100
+ 0230 0103              mulsu R16,R17
+ 0232 F001              movw R30,R0
+ 0234 E05C              subi R30,192
+ 0236 F241              sbci R31,18
+ 0238 E80F              add R30,R24
+ 023A F91F              adc R31,R25
+ 023C 8F81              ldd R24,y+7
+ 023E 9927              clr R25
+ 0240 C097              sbiw R24,48
+ 0242 E80F              add R30,R24
+ 0244 F91F              adc R31,R25
+ 0246 1F01              movw R2,R30
+ 0248 4424              clr R4
+ 024A 37FC              sbrc R3,7
+ 024C 4094              com R4
+ 024E 5524              clr R5
+ 0250 47FC              sbrc R4,7
+ 0252 5094              com R5
+ 0254 30920500          sts _miao+1,R3
+ 0258 20920400          sts _miao,R2
+ 025C 50920700          sts _miao+2+1,R5
+ 0260 40920600          sts _miao+2,R4
+ 0264                   .dbline 80
+ 0264           ;               miao=(miao*10)/6;   
+ 0264 4AE0              ldi R20,10
+ 0266 50E0              ldi R21,0
+ 0268 60E0              ldi R22,0
+ 026A 70E0              ldi R23,0
+ 026C 5A92              st -y,R5
+ 026E 4A92              st -y,R4
+ 0270 3A92              st -y,R3
+ 0272 2A92              st -y,R2
+ 0274 8A01              movw R16,R20
+ 0276 9B01              movw R18,R22
+ 0278 0E940000          xcall empy32u
+ 027C 46E0              ldi R20,6
+ 027E 50E0              ldi R21,0
+ 0280 60E0              ldi R22,0
+ 0282 70E0              ldi R23,0
+ 0284 7A93              st -y,R23
+ 0286 6A93              st -y,R22
+ 0288 5A93              st -y,R21
+ 028A 4A93              st -y,R20
+ 028C 0E940000          xcall div32u
+ 0290 10930500          sts _miao+1,R17
+ 0294 00930400          sts _miao,R16
+ 0298 30930700          sts _miao+2+1,R19
+ 029C 20930600          sts _miao+2,R18
+ 02A0                   .dbline 81
+ 02A0           ;               fen=fen*1000+miao;
+ 02A0 40900A00          lds R4,_fen+2
+ 02A4 50900B00          lds R5,_fen+2+1
+ 02A8 20900800          lds R2,_fen
+ 02AC 30900900          lds R3,_fen+1
+ 02B0 48EE              ldi R20,232
+ 02B2 53E0              ldi R21,3
+ 02B4 60E0              ldi R22,0
+ 02B6 70E0              ldi R23,0
+ 02B8 5A92              st -y,R5
+ 02BA 4A92              st -y,R4
+ 02BC 3A92              st -y,R3
+ 02BE 2A92              st -y,R2
+ 02C0 8A01              movw R16,R20
+ 02C2 9B01              movw R18,R22
+ 02C4 0E940000          xcall empy32u
+ 02C8 1801              movw R2,R16
+ 02CA 2901              movw R4,R18
+ 02CC 80900600          lds R8,_miao+2
+ 02D0 90900700          lds R9,_miao+2+1
+ 02D4 60900400          lds R6,_miao
+ 02D8 70900500          lds R7,_miao+1
+ 02DC 260C              add R2,R6
+ 02DE 371C              adc R3,R7
+ 02E0 481C              adc R4,R8
+ 02E2 591C              adc R5,R9
+ 02E4 30920900          sts _fen+1,R3
+ 02E8 20920800          sts _fen,R2
+ 02EC 50920B00          sts _fen+2+1,R5
+ 02F0 40920A00          sts _fen+2,R4
+ 02F4                   .dbline 82
+ 02F4           ;               fen=fen/6;
+ 02F4 46E0              ldi R20,6
+ 02F6 50E0              ldi R21,0
+ 02F8 60E0              ldi R22,0
+ 02FA 70E0              ldi R23,0
+ 02FC 8101              movw R16,R2
+ 02FE 9201              movw R18,R4
+ 0300 7A93              st -y,R23
+ 0302 6A93              st -y,R22
+ 0304 5A93              st -y,R21
+ 0306 4A93              st -y,R20
+ 0308 0E940000          xcall div32u
+ 030C 10930900          sts _fen+1,R17
+ 0310 00930800          sts _fen,R16
+ 0314 30930B00          sts _fen+2+1,R19
+ 0318 20930A00          sts _fen+2,R18
+ 031C                   .dbline 83
+ 031C           ;       }
+ 031C           L51:
+ 031C                   .dbline 84
+ 031C           ;       if(length+3==7)
+ 031C 8B8D              ldd R24,y+27
+ 031E 8D5F              subi R24,253    ; addi 3
+ 0320 8730              cpi R24,7
+ 0322 09F0              breq X20
+ 0324 B0C0              xjmp L60
+ 0326           X20:
+ 0326           X18:
+ 0326                   .dbline 85
+ 0326           ;       {
+ 0326                   .dbline 86
+ 0326           ;               du=(t[0]-'0')*10+(t[1]-'0');
+ 0326 1881              ldd R17,y+0
+ 0328 0AE0              ldi R16,10
+ 032A 0103              mulsu R16,R17
+ 032C C001              movw R24,R0
+ 032E 805E              subi R24,224
+ 0330 9140              sbci R25,1
+ 0332 E981              ldd R30,y+1
+ 0334 FF27              clr R31
+ 0336 F097              sbiw R30,48
+ 0338 8E0F              add R24,R30
+ 033A 9F1F              adc R25,R31
+ 033C 1C01              movw R2,R24
+ 033E 4424              clr R4
+ 0340 37FC              sbrc R3,7
+ 0342 4094              com R4
+ 0344 5524              clr R5
+ 0346 47FC              sbrc R4,7
+ 0348 5094              com R5
+ 034A 30920D00          sts _du+1,R3
+ 034E 20920C00          sts _du,R2
+ 0352 50920F00          sts _du+2+1,R5
+ 0356 40920E00          sts _du+2,R4
+ 035A                   .dbline 87
+ 035A           ;               fen=(t[2]-'0')*10+(t[3]-'0');
+ 035A 1A81              ldd R17,y+2
+ 035C 0103              mulsu R16,R17
+ 035E C001              movw R24,R0
+ 0360 805E              subi R24,224
+ 0362 9140              sbci R25,1
+ 0364 EB81              ldd R30,y+3
+ 0366 FF27              clr R31
+ 0368 F097              sbiw R30,48
+ 036A 8E0F              add R24,R30
+ 036C 9F1F              adc R25,R31
+ 036E 1C01              movw R2,R24
+ 0370 4424              clr R4
+ 0372 37FC              sbrc R3,7
+ 0374 4094              com R4
+ 0376 5524              clr R5
+ 0378 47FC              sbrc R4,7
+ 037A 5094              com R5
+ 037C 30920900          sts _fen+1,R3
+ 0380 20920800          sts _fen,R2
+ 0384 50920B00          sts _fen+2+1,R5
+ 0388 40920A00          sts _fen+2,R4
+ 038C                   .dbline 88
+ 038C           ;               miao=(t[4]-'0')*100+(t[5]-'0')*10+(t[6]-'0');
+ 038C 1D81              ldd R17,y+5
+ 038E 0103              mulsu R16,R17
+ 0390 C001              movw R24,R0
+ 0392 805E              subi R24,224
+ 0394 9140              sbci R25,1
+ 0396 1C81              ldd R17,y+4
+ 0398 04E6              ldi R16,100
+ 039A 0103              mulsu R16,R17
+ 039C F001              movw R30,R0
+ 039E E05C              subi R30,192
+ 03A0 F241              sbci R31,18
+ 03A2 E80F              add R30,R24
+ 03A4 F91F              adc R31,R25
+ 03A6 8E81              ldd R24,y+6
+ 03A8 9927              clr R25
+ 03AA C097              sbiw R24,48
+ 03AC E80F              add R30,R24
+ 03AE F91F              adc R31,R25
+ 03B0 1F01              movw R2,R30
+ 03B2 4424              clr R4
+ 03B4 37FC              sbrc R3,7
+ 03B6 4094              com R4
+ 03B8 5524              clr R5
+ 03BA 47FC              sbrc R4,7
+ 03BC 5094              com R5
+ 03BE 30920500          sts _miao+1,R3
+ 03C2 20920400          sts _miao,R2
+ 03C6 50920700          sts _miao+2+1,R5
+ 03CA 40920600          sts _miao+2,R4
+ 03CE                   .dbline 89
+ 03CE           ;               miao=(miao*10)/6;   
+ 03CE 4AE0              ldi R20,10
+ 03D0 50E0              ldi R21,0
+ 03D2 60E0              ldi R22,0
+ 03D4 70E0              ldi R23,0
+ 03D6 5A92              st -y,R5
+ 03D8 4A92              st -y,R4
+ 03DA 3A92              st -y,R3
+ 03DC 2A92              st -y,R2
+ 03DE 8A01              movw R16,R20
+ 03E0 9B01              movw R18,R22
+ 03E2 0E940000          xcall empy32u
+ 03E6 46E0              ldi R20,6
+ 03E8 50E0              ldi R21,0
+ 03EA 60E0              ldi R22,0
+ 03EC 70E0              ldi R23,0
+ 03EE 7A93              st -y,R23
+ 03F0 6A93              st -y,R22
+ 03F2 5A93              st -y,R21
+ 03F4 4A93              st -y,R20
+ 03F6 0E940000          xcall div32u
+ 03FA 10930500          sts _miao+1,R17
+ 03FE 00930400          sts _miao,R16
+ 0402 30930700          sts _miao+2+1,R19
+ 0406 20930600          sts _miao+2,R18
+ 040A                   .dbline 90
+ 040A           ;               fen=fen*1000+miao;
+ 040A 40900A00          lds R4,_fen+2
+ 040E 50900B00          lds R5,_fen+2+1
+ 0412 20900800          lds R2,_fen
+ 0416 30900900          lds R3,_fen+1
+ 041A 48EE              ldi R20,232
+ 041C 53E0              ldi R21,3
+ 041E 60E0              ldi R22,0
+ 0420 70E0              ldi R23,0
+ 0422 5A92              st -y,R5
+ 0424 4A92              st -y,R4
+ 0426 3A92              st -y,R3
+ 0428 2A92              st -y,R2
+ 042A 8A01              movw R16,R20
+ 042C 9B01              movw R18,R22
+ 042E 0E940000          xcall empy32u
+ 0432 1801              movw R2,R16
+ 0434 2901              movw R4,R18
+ 0436 80900600          lds R8,_miao+2
+ 043A 90900700          lds R9,_miao+2+1
+ 043E 60900400          lds R6,_miao
+ 0442 70900500          lds R7,_miao+1
+ 0446 260C              add R2,R6
+ 0448 371C              adc R3,R7
+ 044A 481C              adc R4,R8
+ 044C 591C              adc R5,R9
+ 044E 30920900          sts _fen+1,R3
+ 0452 20920800          sts _fen,R2
+ 0456 50920B00          sts _fen+2+1,R5
+ 045A 40920A00          sts _fen+2,R4
+ 045E                   .dbline 91
+ 045E           ;               fen=fen/6;
+ 045E 46E0              ldi R20,6
+ 0460 50E0              ldi R21,0
+ 0462 60E0              ldi R22,0
+ 0464 70E0              ldi R23,0
+ 0466 8101              movw R16,R2
+ 0468 9201              movw R18,R4
+ 046A 7A93              st -y,R23
+ 046C 6A93              st -y,R22
+ 046E 5A93              st -y,R21
+ 0470 4A93              st -y,R20
+ 0472 0E940000          xcall div32u
+ 0476 10930900          sts _fen+1,R17
+ 047A 00930800          sts _fen,R16
+ 047E 30930B00          sts _fen+2+1,R19
+ 0482 20930A00          sts _fen+2,R18
+ 0486                   .dbline 92
+ 0486           ;       }
+ 0486           L60:
+ 0486                   .dbline 102
+ 0486           ;       //for(i=0;i<9;i++)
+ 0486           ;               //usart0_sent_char(t[i]-'0');
+ 0486           ;               //usart0_sent_char(t[i]);
+ 0486           ;               //res+=NMEA_Pow(length+2-i)*((unsigned long)(t[i]-'0'));
+ 0486           ;    
+ 0486           ;       //usart0_sent_char(t[0]);
+ 0486           ;       //usart0_sent_char(t[1]);
+ 0486           ;       //usart0_sent_char(t[]);
+ 0486           ;       
+ 0486           ;       return res;
+ 0486 0A2D              mov R16,R10
+ 0488                   .dbline -2
+ 0488           L24:
+ 0488                   .dbline 0 ; func end
+ 0488 2D96              adiw R28,13
+ 048A 0E940000          xcall pop_xgsetF0FC
+ 048E 2496              adiw R28,4
+ 0490 0895              ret
+ 0492                   .dbsym r res 10 c
+ 0492                   .dbsym l flen 12 c
+ 0492                   .dbsym r mask 14 c
+ 0492                   .dbsym l t 0 A[9:9]c
+ 0492                   .dbsym l ilen 11 c
+ 0492                   .dbsym l p 9 pc
+ 0492                   .dbsym r i 14 c
+ 0492                   .dbsym l length 27 c
+ 0492                   .dbsym l dx 25 pc
+ 0492                   .dbsym l buf 23 pc
+ 0492                   .dbend
+ 0492                   .dbfunc e NMEA_GPRMC_Analysis _NMEA_GPRMC_Analysis fV
+ 0492                   .dbstruct 0 5 .1
+ 0492                   .dbfield 0 num c
+ 0492                   .dbfield 1 eledeg c
+ 0492                   .dbfield 2 azideg i
+ 0492                   .dbfield 4 sn c
+ 0492                   .dbend
+ 0492                   .dbstruct 0 7 .2
+ 0492                   .dbfield 0 year i
+ 0492                   .dbfield 2 month c
+ 0492                   .dbfield 3 date c
+ 0492                   .dbfield 4 hour c
+ 0492                   .dbfield 5 min c
+ 0492                   .dbfield 6 sec c
+ 0492                   .dbend
+ 0492                   .dbstruct 0 103 .3
+ 0492                   .dbfield 0 svnum c
+ 0492                   .dbfield 1 slmsg A[60:12]S[.1]
+ 0492                   .dbfield 61 utc S[.2]
+ 0492                   .dbfield 68 latitude l
+ 0492                   .dbfield 72 nshemi c
+ 0492                   .dbfield 73 longitude l
+ 0492                   .dbfield 77 ewhemi c
+ 0492                   .dbfield 78 gpssta c
+ 0492                   .dbfield 79 posslnum c
+ 0492                   .dbfield 80 possl A[12:12]c
+ 0492                   .dbfield 92 fixmode c
+ 0492                   .dbfield 93 pdop i
+ 0492                   .dbfield 95 hdop i
+ 0492                   .dbfield 97 vdop i
+ 0492                   .dbfield 99 altitude I
+ 0492                   .dbfield 101 speed i
+ 0492                   .dbend
+ 0492           ;           temp -> y+6
+ 0492           ;             dx -> y+5
+ 0492           ;             rs -> y+1
+ 0492           ;             p1 -> R12,R13
+ 0492           ;           posx -> R14
+ 0492           ;            buf -> R10,R11
+ 0492           ;           gpsx -> y+20
+                        .even
+ 0492           _NMEA_GPRMC_Analysis::
+ 0492 0E940000          xcall push_arg4
+ 0496 0E940000          xcall push_xgsetF0FC
+ 049A 5901              movw R10,R18
+ 049C 2A97              sbiw R28,10
+ 049E                   .dbline -1
+ 049E                   .dbline 109
+ 049E           ; }                                                              
+ 049E           ; 
+ 049E           ; //分析GPRMC信息
+ 049E           ; //gpsx:nmea信息结构体
+ 049E           ; //buf:接收到的GPS数据缓冲区首地址
+ 049E           ; void NMEA_GPRMC_Analysis(nmea_msg *gpsx,unsigned char *buf)
+ 049E           ; {
+ 049E                   .dbline 114
+ 049E           ;       unsigned char *p1,dx;                    
+ 049E           ;       unsigned char posx;     
+ 049E           ;       unsigned long temp;        
+ 049E           ;       unsigned long rs;  
+ 049E           ;       p1=(unsigned char*)strstr((const char *)buf,"$GPGLL");//"$GPRMC",经常有&和GPRMC分开的情况,故只判断GPRMC.
+ 049E 20E0              ldi R18,<L69
+ 04A0 30E0              ldi R19,>L69
+ 04A2 8501              movw R16,R10
+ 04A4 0E940000          xcall _strstr
+ 04A8 6801              movw R12,R16
+ 04AA                   .dbline 125
+ 04AA           ;       //usart0_sent_string(p1);
+ 04AA           ;       //posx=NMEA_Comma_Pos(p1,1);                                                            //得到UTC时间
+ 04AA           ;       //if(posx!=0XFF)
+ 04AA           ;       //{
+ 04AA           ;       //      temp=NMEA_Str2num(p1+posx,&dx)/NMEA_Pow(10,dx);         //得到UTC时间,去掉ms
+ 04AA           ;       //      gpsx->utc.hour=temp/10000;
+ 04AA           ;       //      gpsx->utc.min=(temp/100)%100;
+ 04AA           ;       //      gpsx->utc.sec=temp%100;          
+ 04AA           ;       //}     
+ 04AA           ;       //sscanf()
+ 04AA           ;       posx=NMEA_Comma_Pos(p1,1);                                                              //得到纬度
+ 04AA 21E0              ldi R18,1
+ 04AC A9DD              xcall _NMEA_Comma_Pos
+ 04AE E02E              mov R14,R16
+ 04B0                   .dbline 126
+ 04B0           ;       if(posx!=0XFF)
+ 04B0 0F3F              cpi R16,255
+ 04B2 09F4              brne X25
+ 04B4 53C0              xjmp L70
+ 04B6           X25:
+ 04B6           X21:
+ 04B6                   .dbline 127
+ 04B6           ;       {
+ 04B6                   .dbline 128
+ 04B6           ;               temp=NMEA_Str2num(p1+posx,&dx,4);       
+ 04B6 84E0              ldi R24,4
+ 04B8 8883              std y+0,R24
+ 04BA 9E01              movw R18,R28
+ 04BC 2B5F              subi R18,251  ; offset = 5
+ 04BE 3F4F              sbci R19,255
+ 04C0 1127              clr R17
+ 04C2 0C0D              add R16,R12
+ 04C4 1D1D              adc R17,R13
+ 04C6 E5DD              xcall _NMEA_Str2num
+ 04C8 A02E              mov R10,R16
+ 04CA 2A2C              mov R2,R10
+ 04CC 3324              clr R3
+ 04CE 4424              clr R4
+ 04D0 5524              clr R5
+ 04D2 2E82              std y+6,R2
+ 04D4 3F82              std y+7,R3
+ 04D6 4886              std y+8,R4
+ 04D8 5986              std y+9,R5
+ 04DA                   .dbline 131
+ 04DA           ;               //gpsx->latitude=temp; 
+ 04DA           ;               //temp=2302515;
+ 04DA           ;               gpsx->latitude=du;      //得到°
+ 04DA 40900E00          lds R4,_du+2
+ 04DE 50900F00          lds R5,_du+2+1
+ 04E2 20900C00          lds R2,_du
+ 04E6 30900D00          lds R3,_du+1
+ 04EA EC89              ldd R30,y+20
+ 04EC FD89              ldd R31,y+21
+ 04EE EC5B              subi R30,188  ; offset = 68
+ 04F0 FF4F              sbci R31,255
+ 04F2 2082              std z+0,R2
+ 04F4 3182              std z+1,R3
+ 04F6 4282              std z+2,R4
+ 04F8 5382              std z+3,R5
+ 04FA                   .dbline 132
+ 04FA           ;               rs=fen;                         //得到'          
+ 04FA 40900A00          lds R4,_fen+2
+ 04FE 50900B00          lds R5,_fen+2+1
+ 0502 20900800          lds R2,_fen
+ 0506 30900900          lds R3,_fen+1
+ 050A 2982              std y+1,R2
+ 050C 3A82              std y+2,R3
+ 050E 4B82              std y+3,R4
+ 0510 5C82              std y+4,R5
+ 0512                   .dbline 133
+ 0512           ;               gpsx->latitude=gpsx->latitude*10000+rs;//转换为° 
+ 0512 8C89              ldd R24,y+20
+ 0514 9D89              ldd R25,y+21
+ 0516 8C5B              subi R24,188  ; offset = 68
+ 0518 9F4F              sbci R25,255
+ 051A 5C01              movw R10,R24
+ 051C FC01              movw R30,R24
+ 051E 2080              ldd R2,z+0
+ 0520 3180              ldd R3,z+1
+ 0522 4280              ldd R4,z+2
+ 0524 5380              ldd R5,z+3
+ 0526 40E1              ldi R20,16
+ 0528 57E2              ldi R21,39
+ 052A 60E0              ldi R22,0
+ 052C 70E0              ldi R23,0
+ 052E 5A92              st -y,R5
+ 0530 4A92              st -y,R4
+ 0532 3A92              st -y,R3
+ 0534 2A92              st -y,R2
+ 0536 8A01              movw R16,R20
+ 0538 9B01              movw R18,R22
+ 053A 0E940000          xcall empy32u
+ 053E 1801              movw R2,R16
+ 0540 2901              movw R4,R18
+ 0542 6980              ldd R6,y+1
+ 0544 7A80              ldd R7,y+2
+ 0546 8B80              ldd R8,y+3
+ 0548 9C80              ldd R9,y+4
+ 054A 260C              add R2,R6
+ 054C 371C              adc R3,R7
+ 054E 481C              adc R4,R8
+ 0550 591C              adc R5,R9
+ 0552 F501              movw R30,R10
+ 0554 2082              std z+0,R2
+ 0556 3182              std z+1,R3
+ 0558 4282              std z+2,R4
+ 055A 5382              std z+3,R5
+ 055C                   .dbline 134
+ 055C           ;       }
+ 055C           L70:
+ 055C                   .dbline 135
+ 055C           ;       posx=NMEA_Comma_Pos(p1,2);                                                              //南纬还是北纬 
+ 055C 22E0              ldi R18,2
+ 055E 8601              movw R16,R12
+ 0560 4FDD              xcall _NMEA_Comma_Pos
+ 0562 A02E              mov R10,R16
+ 0564 EA2C              mov R14,R10
+ 0566                   .dbline 136
+ 0566           ;       if(posx!=0XFF)gpsx->nshemi=*(p1+posx);                                   
+ 0566 8E2D              mov R24,R14
+ 0568 0F3F              cpi R16,255
+ 056A 51F0              breq L72
+ 056C           X22:
+ 056C                   .dbline 136
+ 056C E82F              mov R30,R24
+ 056E FF27              clr R31
+ 0570 EC0D              add R30,R12
+ 0572 FD1D              adc R31,R13
+ 0574 2080              ldd R2,z+0
+ 0576 EC89              ldd R30,y+20
+ 0578 FD89              ldd R31,y+21
+ 057A E85B              subi R30,184  ; addi 72
+ 057C FF4F              sbci R31,255
+ 057E 2082              std z+0,R2
+ 0580           L72:
+ 0580                   .dbline 137
+ 0580           ;       posx=NMEA_Comma_Pos(p1,3);                                                              //得到经度
+ 0580 23E0              ldi R18,3
+ 0582 8601              movw R16,R12
+ 0584 3DDD              xcall _NMEA_Comma_Pos
+ 0586 A02E              mov R10,R16
+ 0588 EA2C              mov R14,R10
+ 058A                   .dbline 138
+ 058A           ;       if(posx!=0XFF)
+ 058A 0F3F              cpi R16,255
+ 058C 09F4              brne X26
+ 058E 53C0              xjmp L74
+ 0590           X26:
+ 0590           X23:
+ 0590                   .dbline 139
+ 0590           ;       {                                                                                                 
+ 0590                   .dbline 140
+ 0590           ;               temp=NMEA_Str2num(p1+posx,&dx,5);
+ 0590 85E0              ldi R24,5
+ 0592 8883              std y+0,R24
+ 0594 9E01              movw R18,R28
+ 0596 2B5F              subi R18,251  ; offset = 5
+ 0598 3F4F              sbci R19,255
+ 059A 1127              clr R17
+ 059C 0C0D              add R16,R12
+ 059E 1D1D              adc R17,R13
+ 05A0 78DD              xcall _NMEA_Str2num
+ 05A2 A02E              mov R10,R16
+ 05A4 2A2C              mov R2,R10
+ 05A6 3324              clr R3
+ 05A8 4424              clr R4
+ 05AA 5524              clr R5
+ 05AC 2E82              std y+6,R2
+ 05AE 3F82              std y+7,R3
+ 05B0 4886              std y+8,R4
+ 05B2 5986              std y+9,R5
+ 05B4                   .dbline 143
+ 05B4           ;               //gpsx->longitude=temp;
+ 05B4           ;               //temp=11321676;         
+ 05B4           ;               gpsx->longitude=du;     //得到°
+ 05B4 40900E00          lds R4,_du+2
+ 05B8 50900F00          lds R5,_du+2+1
+ 05BC 20900C00          lds R2,_du
+ 05C0 30900D00          lds R3,_du+1
+ 05C4 EC89              ldd R30,y+20
+ 05C6 FD89              ldd R31,y+21
+ 05C8 E75B              subi R30,183  ; offset = 73
+ 05CA FF4F              sbci R31,255
+ 05CC 2082              std z+0,R2
+ 05CE 3182              std z+1,R3
+ 05D0 4282              std z+2,R4
+ 05D2 5382              std z+3,R5
+ 05D4                   .dbline 144
+ 05D4           ;               rs=fen;                         //得到'          
+ 05D4 40900A00          lds R4,_fen+2
+ 05D8 50900B00          lds R5,_fen+2+1
+ 05DC 20900800          lds R2,_fen
+ 05E0 30900900          lds R3,_fen+1
+ 05E4 2982              std y+1,R2
+ 05E6 3A82              std y+2,R3
+ 05E8 4B82              std y+3,R4
+ 05EA 5C82              std y+4,R5
+ 05EC                   .dbline 145
+ 05EC           ;               gpsx->longitude=gpsx->longitude*10000+rs;//转换为° 
+ 05EC 8C89              ldd R24,y+20
+ 05EE 9D89              ldd R25,y+21
+ 05F0 875B              subi R24,183  ; offset = 73
+ 05F2 9F4F              sbci R25,255
+ 05F4 5C01              movw R10,R24
+ 05F6 FC01              movw R30,R24
+ 05F8 2080              ldd R2,z+0
+ 05FA 3180              ldd R3,z+1
+ 05FC 4280              ldd R4,z+2
+ 05FE 5380              ldd R5,z+3
+ 0600 40E1              ldi R20,16
+ 0602 57E2              ldi R21,39
+ 0604 60E0              ldi R22,0
+ 0606 70E0              ldi R23,0
+ 0608 5A92              st -y,R5
+ 060A 4A92              st -y,R4
+ 060C 3A92              st -y,R3
+ 060E 2A92              st -y,R2
+ 0610 8A01              movw R16,R20
+ 0612 9B01              movw R18,R22
+ 0614 0E940000          xcall empy32u
+ 0618 1801              movw R2,R16
+ 061A 2901              movw R4,R18
+ 061C 6980              ldd R6,y+1
+ 061E 7A80              ldd R7,y+2
+ 0620 8B80              ldd R8,y+3
+ 0622 9C80              ldd R9,y+4
+ 0624 260C              add R2,R6
+ 0626 371C              adc R3,R7
+ 0628 481C              adc R4,R8
+ 062A 591C              adc R5,R9
+ 062C F501              movw R30,R10
+ 062E 2082              std z+0,R2
+ 0630 3182              std z+1,R3
+ 0632 4282              std z+2,R4
+ 0634 5382              std z+3,R5
+ 0636                   .dbline 146
+ 0636           ;       }
+ 0636           L74:
+ 0636                   .dbline 147
+ 0636           ;       posx=NMEA_Comma_Pos(p1,4);                                                              //东经还是西经
+ 0636 24E0              ldi R18,4
+ 0638 8601              movw R16,R12
+ 063A E2DC              xcall _NMEA_Comma_Pos
+ 063C A02E              mov R10,R16
+ 063E EA2C              mov R14,R10
+ 0640                   .dbline 148
+ 0640           ;       if(posx!=0XFF)gpsx->ewhemi=*(p1+posx);           
+ 0640 8E2D              mov R24,R14
+ 0642 0F3F              cpi R16,255
+ 0644 51F0              breq L76
+ 0646           X24:
+ 0646                   .dbline 148
+ 0646 E82F              mov R30,R24
+ 0648 FF27              clr R31
+ 064A EC0D              add R30,R12
+ 064C FD1D              adc R31,R13
+ 064E 2080              ldd R2,z+0
+ 0650 EC89              ldd R30,y+20
+ 0652 FD89              ldd R31,y+21
+ 0654 E35B              subi R30,179  ; addi 77
+ 0656 FF4F              sbci R31,255
+ 0658 2082              std z+0,R2
+ 065A           L76:
+ 065A                   .dbline -2
+ 065A           L68:
+ 065A                   .dbline 0 ; func end
+ 065A 2A96              adiw R28,10
+ 065C 0E940000          xcall pop_xgsetF0FC
+ 0660 2496              adiw R28,4
+ 0662 0895              ret
+ 0664                   .dbsym l temp 6 l
+ 0664                   .dbsym l dx 5 c
+ 0664                   .dbsym l rs 1 l
+ 0664                   .dbsym r p1 12 pc
+ 0664                   .dbsym r posx 14 c
+ 0664                   .dbsym r buf 10 pc
+ 0664                   .dbsym l gpsx 20 pS[.3]
+ 0664                   .dbend
+ 0664                   .dbfunc e GPS_Analysis _GPS_Analysis fV
+ 0664           ;            buf -> R12,R13
+ 0664           ;           gpsx -> R10,R11
+                        .even
+ 0664           _GPS_Analysis::
+ 0664 0E940000          xcall push_xgset003C
+ 0668 6901              movw R12,R18
+ 066A 5801              movw R10,R16
+ 066C                   .dbline -1
+ 066C                   .dbline 163
+ 066C           ;       //posx=NMEA_Comma_Pos(p1,9);                                                            //得到UTC日期
+ 066C           ;       //if(posx!=0XFF)
+ 066C           ;       //{
+ 066C           ;       //      temp=NMEA_Str2num(p1+posx,&dx);                                         //得到UTC日期
+ 066C           ;       //      gpsx->utc.date=temp/10000;
+ 066C           ;       //      gpsx->utc.month=(temp/100)%100;
+ 066C           ;       //      gpsx->utc.year=2000+temp%100;            
+ 066C           ;       //} 
+ 066C           ; }
+ 066C           ; 
+ 066C           ; //提取NMEA-0183信息
+ 066C           ; //gpsx:nmea信息结构体
+ 066C           ; //buf:接收到的GPS数据缓冲区首地址
+ 066C           ; void GPS_Analysis(nmea_msg *gpsx,unsigned char *buf)
+ 066C           ; {
+ 066C                   .dbline 167
+ 066C           ;       //NMEA_GPGSV_Analysis(gpsx,buf);        //GPGSV解析
+ 066C           ;       //NMEA_GPGGA_Analysis(gpsx,buf);        //GPGGA解析     
+ 066C           ;       //NMEA_GPGSA_Analysis(gpsx,buf);        //GPGSA解析
+ 066C           ;       NMEA_GPRMC_Analysis(gpsx,buf);  //GPRMC解析
+ 066C 9601              movw R18,R12
+ 066E 8501              movw R16,R10
+ 0670 10DF              xcall _NMEA_GPRMC_Analysis
+ 0672                   .dbline -2
+ 0672           L78:
+ 0672                   .dbline 0 ; func end
+ 0672 0C940000          xjmp pop_xgset003C
+ 0676                   .dbsym r buf 12 pc
+ 0676                   .dbsym r gpsx 10 pS[.3]
+ 0676                   .dbend
+ 0676                   .dbfunc e Ublox_CheckSum _Ublox_CheckSum fV
+ 0676           ;              i -> R20,R21
+ 0676           ;            ckb -> R12,R13
+ 0676           ;            cka -> R10,R11
+ 0676           ;            len -> R18,R19
+ 0676           ;            buf -> R16,R17
+                        .even
+ 0676           _Ublox_CheckSum::
+ 0676 0E940000          xcall push_xgset303C
+ 067A AE80              ldd R10,y+6
+ 067C BF80              ldd R11,y+7
+ 067E C884              ldd R12,y+8
+ 0680 D984              ldd R13,y+9
+ 0682                   .dbline -1
+ 0682                   .dbline 176
+ 0682           ;       //NMEA_GPVTG_Analysis(gpsx,buf);        //GPVTG解析
+ 0682           ; }
+ 0682           ; 
+ 0682           ; //GPS校验和计算
+ 0682           ; //buf:数据缓存区首地址
+ 0682           ; //len:数据长度
+ 0682           ; //cka,ckb:两个校验结果.
+ 0682           ; void Ublox_CheckSum(unsigned char *buf,unsigned int len,unsigned char* cka,unsigned char*ckb)
+ 0682           ; {
+ 0682                   .dbline 178
+ 0682           ;       unsigned int i;
+ 0682           ;       *cka=0;*ckb=0;
+ 0682 2224              clr R2
+ 0684 F501              movw R30,R10
+ 0686 2082              std z+0,R2
+ 0688                   .dbline 178
+ 0688 F601              movw R30,R12
+ 068A 2082              std z+0,R2
+ 068C                   .dbline 179
+ 068C           ;       for(i=0;i<len;i++)
+ 068C 4427              clr R20
+ 068E 5527              clr R21
+ 0690 0FC0              xjmp L83
+ 0692           L80:
+ 0692                   .dbline 180
+ 0692           ;       {
+ 0692                   .dbline 181
+ 0692           ;               *cka=*cka+buf[i];
+ 0692 FA01              movw R30,R20
+ 0694 E00F              add R30,R16
+ 0696 F11F              adc R31,R17
+ 0698 2080              ldd R2,z+0
+ 069A F501              movw R30,R10
+ 069C 3080              ldd R3,z+0
+ 069E 320C              add R3,R2
+ 06A0 3082              std z+0,R3
+ 06A2                   .dbline 182
+ 06A2           ;               *ckb=*ckb+*cka;
+ 06A2 2080              ldd R2,z+0
+ 06A4 F601              movw R30,R12
+ 06A6 3080              ldd R3,z+0
+ 06A8 320C              add R3,R2
+ 06AA 3082              std z+0,R3
+ 06AC                   .dbline 183
+ 06AC           ;       }
+ 06AC           L81:
+ 06AC                   .dbline 179
+ 06AC 4F5F              subi R20,255  ; offset = 1
+ 06AE 5F4F              sbci R21,255
+ 06B0           L83:
+ 06B0                   .dbline 179
+ 06B0 4217              cp R20,R18
+ 06B2 5307              cpc R21,R19
+ 06B4 70F3              brlo L80
+ 06B6           X27:
+ 06B6                   .dbline -2
+ 06B6           L79:
+ 06B6                   .dbline 0 ; func end
+ 06B6 0C940000          xjmp pop_xgset303C
+ 06BA                   .dbsym r i 20 i
+ 06BA                   .dbsym r ckb 12 pc
+ 06BA                   .dbsym r cka 10 pc
+ 06BA                   .dbsym r len 18 i
+ 06BA                   .dbsym r buf 16 pc
+ 06BA                   .dbend
+                        .area bss(ram, con, rel)
+ 0000                   .dbfile C:\Users\acer\Desktop\神龙\encoder_uart_v4\gps.c
+ 0000           _doc::
+ 0000                   .blkb 4
+ 0004                   .dbsym e doc _doc D
+ 0004           _miao::
+ 0004                   .blkb 4
+ 0008                   .dbsym e miao _miao l
+ 0008           _fen::
+ 0008                   .blkb 4
+ 000C                   .dbsym e fen _fen l
+ 000C           _du::
+ 000C                   .blkb 4
+ 0010                   .dbsym e du _du l
+ 0010           _n::
+ 0010                   .blkb 1
+ 0011                   .dbsym e n _n c
+                        .area data(ram, con, rel)
+ 0000                   .dbfile C:\Users\acer\Desktop\神龙\encoder_uart_v4\gps.c
+ 0000           L69:
+ 0000                   .blkb 7
+                        .area idata
+ 0000 244750474C4C00    .byte 36,'G,'P,'G,'L,'L,0
+                        .area data(ram, con, rel)
+ 0007                   .dbfile C:\Users\acer\Desktop\神龙\encoder_uart_v4\gps.c
+ 0007           ; }
+ 0007           ; 

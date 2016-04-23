@@ -1,0 +1,332 @@
+/*********
+verson3
+pidÖ±Ïß
+*******/
+#include"encoder.h"
+#include"uart.h"
+#include"pwm.h"
+#include"pid.h"
+#include"iom128v.h"
+/*
+*ICP_init
+*²¶×½ÊäÈëº¯Êı³õÊ¼»¯
+*´øÈë²ÎÊı:ÎŞ
+*·µ»Ø²ÎÊı:ÎŞ
+*/
+#define bell_open() PORTA|=(1<<1)
+#define bell_close() PORTA&=~(1<<1)
+#define move() P->Vsp = 50
+#define stop() P->Vsp = 0
+unsigned char data[200];
+unsigned char app_data[5]={1};
+unsigned char gps_data[200]={1};
+unsigned char uart1_receive_flag=0;
+unsigned char lock_flag=0;
+int num_pulse_1 = 0;
+int get_num_pulse_1 = 0;
+
+int num_pulse_3 = 0;
+int get_num_pulse_3 = 0;
+//int flag;
+int vino = 0;
+
+//double dError;
+//double Error;
+//double Pwm;
+	
+void delay_ms(unsigned int i) {
+
+	unsigned int a;
+	unsigned char b;
+	for (a = 0; a < i; a++) {
+		for (b = 1; b; b++) {
+			;
+			}
+		}
+}
+
+
+		
+/*
+*ICP_1ÖĞ¶Ïº¯Êı
+*¸´Î»¶¨Ê±Æ÷¼ÆÊıÖµ
+*Èç¹ûÊÇĞÂĞÅºÅ,Ôò´ò¿ªÒç³öÖĞ¶Ï£¬ÒÔÀ¹½ØÖ¡½áÊø¡£
+*Õı³£ĞÅºÅ£¬¼ì²â·ÀÖ¹Òç³ö£¬±£´æÊÕµ½Êı¾İÖµ¡
+*/
+
+//ÖĞ¶ÏÏòÁ¿ºÅ 12    T1ÊäÈë²¶×½ÊÂ¼şÖĞ¶Ï
+
+#pragma interrupt_handler INT_T1_ICP: 12
+void INT_T1_ICP(void)
+{
+	TIMSK &= ~(1 << TOIE1);						//¹Ø±ÕÒç³öÖĞ¶Ï	
+	num_pulse_1++;
+	
+	//TIMSK |= (1 << TOIE1);						//Òç³öÖĞ¶ÏÓĞĞ§					
+	//TIFR |= (1 << TOV1);						//Òç³öÖĞ¶Ï±êÖ¾Çå³ı		
+	//flag = TCNT1;
+	TIMSK |= (1 << TOIE1);						//´ò¿ªÒç³öÖĞ¶Ï		
+}
+
+/*
+*ICP_3ÖĞ¶Ïº¯Êı
+*¸´Î»¶¨Ê±Æ÷¼ÆÊıÖµ
+*Èç¹ûÊÇĞÂĞÅºÅ,Ôò´ò¿ªÒç³öÖĞ¶Ï£¬ÒÔÀ¹½ØÖ¡½áÊø¡£
+*Õı³£ĞÅºÅ£¬¼ì²â·ÀÖ¹Òç³ö£¬±£´æÊÕµ½Êı¾İÖµ¡
+*/
+
+//ÖĞ¶ÏÏòÁ¿ºÅ 12    T1ÊäÈë²¶×½ÊÂ¼şÖĞ¶Ï
+
+#pragma interrupt_handler INT_T3_ICP: 26
+void INT_T3_ICP(void)
+{
+	TIMSK &= ~(1 << TOIE1);						//¹Ø±ÕÒç³öÖĞ¶Ï	
+	num_pulse_3++;
+	
+	//TIMSK |= (1 << TOIE1);						//Òç³öÖĞ¶ÏÓĞĞ§					
+	//TIFR |= (1 << TOV1);						//Òç³öÖĞ¶Ï±êÖ¾Çå³ı		
+	//flag = TCNT1;
+	TIMSK |= (1 << TOIE1);						//´ò¿ªÒç³öÖĞ¶Ï		
+}
+
+#pragma interrupt_handler INT_T1_OV: 15
+void INT_T1_OV(void)
+{
+	TIMSK &= ~(1 << TICIE1);			//²¶×½ÖĞ¶ÏICP1Ê§ÄÜ	
+	ETIMSK &= ~(1 << TICIE3);			//²¶×½ÖĞ¶ÏICP3Ê§ÄÜ	
+	if(TCNT1 == 0)
+	{
+		vino++;
+		get_num_pulse_1 = num_pulse_1;					//È¥È¡³öÒ»ÃëÄÚICP_1²¶×½µÄÂö³åÊı
+		get_num_pulse_3 = num_pulse_3;					//È¥È¡³öÒ»ÃëÄÚICP_3²¶×½µÄÂö³åÊı
+		////////sent(get_num_pulse*3/20);
+		if(vino == 25)
+		{
+			//flag++;
+			sent((get_num_pulse_1)*5/2);
+			sent((get_num_pulse_3)*5/2);
+			//sent(get_num_pulse_1);
+			//sent(get_num_pulse_3);
+			vino = 0;
+		}
+		num_pulse_1 = 0;								//Âö³å¼ÆÊıÇåÁã
+		num_pulse_3 = 0;								//Âö³å¼ÆÊıÇåÁã
+
+		/**********
+		*µÚÒ»¸öpidµÄ³ÌĞò
+		*ÆÚÍûËÙ¶ÈÎª×Ô¶¨Òå
+		*pid¼ÆËãËùĞèpwm
+		***********/
+		p->Vpv = ((get_num_pulse_1)*5/2);		//µ±Ç°ËÙ¶È  r/min
+		////////p->Vpv = (get_num_pulse*3/20);		//µ±Ç°ËÙ¶È  r/min
+		p->Error = p->Vsp - p->Vpv;		//Æ«²î
+		p->Vse += p->Error;				//»ı·Ö 
+		p->dError = p->Vle - p->Vpe;	//µ±Ç°Î¢·Ö
+		p->Vpe = p->Vle;
+		p->Vle = p->Error;
+		p->Pwm = p->Kp * p->Error + p->Ki * p->Vse + p->Kd * p->dError;
+		
+		/*if((OCR3A + p->Pwm) > 255)
+		{
+			OCR3A = 255;
+		}
+		else */if((OCR3A + p->Pwm) < 0)
+		{
+			OCR3A = 0;
+		}
+		else
+		{
+			OCR3A=OCR3A+p->Pwm;		//µ÷ÕûPWMÕ¼¿Õ±È£¬×ª³ÉÎ»ÖÃÊ½PIDËã·¨
+		}
+		
+		/**********
+		*µÚ¶ş¸öpidµÄ³ÌĞò
+		*ÆÚÍûËÙ¶ÈÎªµÚÒ»¸öpid·µ»ØµÄÕæÊµËÙ¶È
+		*pidµ÷Õû¼õÉÙÁ½¸öµç»úËÙ¶È²î
+		***********/
+		v->Vsp = ((get_num_pulse_1)*5/2);		//ÆÚÍûÖµÈ¡µÚÒ»¸öpwm·µ»ØµÄÕæÊµËÙ¶ÈÖµ
+		v->Vpv = ((get_num_pulse_3)*5/2);		//µ±Ç°ËÙ¶È  r/min
+		////////p->Vpv = (get_num_pulse*3/20);		//µ±Ç°ËÙ¶È  r/min
+		v->Error = v->Vsp - v->Vpv;		//Æ«²î
+		v->Vse += v->Error;				//»ı·Ö 
+		v->dError = v->Vle - v->Vpe;	//µ±Ç°Î¢·Ö
+		v->Vpe = v->Vle;
+		v->Vle = v->Error;
+		v->Pwm = v->Kp * v->Error + v->Ki * v->Vse + v->Kd * v->dError;
+		
+		/*if((OCR3B + v->Pwm) > 255)
+		{
+			OCR3B = 255;
+		}
+		else */if((OCR3B + v->Pwm) < 0)
+		{
+			OCR3B = 0;
+		}
+		else
+		{
+			OCR3B=OCR3B+v->Pwm;		//µ÷ÕûPWMÕ¼¿Õ±È£¬×ª³ÉÎ»ÖÃÊ½PIDËã·¨
+		}
+		
+		
+		
+		TCNT1 = 64285;
+	}
+	
+
+	TIMSK |= (1 << TICIE1);			//²¶×½ÖĞ¶ÏÓĞĞ§	
+	ETIMSK |= (1 << TICIE3);			//²¶×½ÖĞ¶ÏÓĞĞ§	
+
+}
+/*
+*UART1½ÓÊÕÖĞ¶Ïº¯Êı
+*½ÓÊÕÊÖ»ú¶Ë·¢ËÍÀ´µÄĞÅºÅ
+*/
+#pragma interrupt_handler uart1_receive:31
+void uart1_receive()
+{
+   static unsigned char st_bit=0;
+   unsigned char n;
+   n=UDR1;
+  if((0!=st_bit)&&(uart1_receive_flag))
+     {
+	   app_data[st_bit]=n-'0';
+	   st_bit++;
+	 }
+   else  if((uart1_receive_flag)&&('s'==n)&&(0==st_bit))
+     {
+	   st_bit++;
+	 }
+   
+   if(4==st_bit)
+     {
+	   st_bit=0;
+	   uart1_receive_flag=0;
+	 }
+ 
+	
+}
+
+#pragma interrupt_handler uart0_receiv:19
+void uart0_receiv()
+{
+  static unsigned char data_bit_flag=0;
+  unsigned char n;
+  n=UDR1;
+  if('C'==n)
+    {
+	  if(4==data_bit_flag)
+	  {
+	    data_bit_flag++;
+	    data[4]=n;
+      }
+	  else data_bit_flag=0;
+	}
+   if('M'==n)
+    {
+	  if(3==data_bit_flag)
+	  {
+	    data_bit_flag++;
+	    data[3]=n;
+      }
+	  else data_bit_flag=0;
+	}
+  if('R'==n)
+    {
+	  if(2==data_bit_flag)
+	  {
+	    data_bit_flag++;
+	    data[2]=n;
+      }
+	  else data_bit_flag=0;
+	}
+  if('P'==n)
+    {
+	  if(1==data_bit_flag)
+	  {
+	    data_bit_flag++;
+	    data[1]=n;
+      }
+	  else data_bit_flag=0;
+	}
+  if('G'==n)
+    {
+	  data_bit_flag++;
+	  data[0]=n;
+	}
+  if(data_bit_flag>4)
+    {
+	  data[data_bit_flag]=n;
+	  data_bit_flag++;
+	  if('$'==n)
+	    {
+	      data_bit_flag=0;
+		  data_rec_done_flag=1;
+		  uart0_str(&data[0]);
+		}
+	}
+	
+}
+void main(void)
+{
+	PIDInit_1();
+	PIDInit_3();
+	io_init();
+	t3_init();
+	ICP_1_init();
+	ICP_3_init();
+	uart0_init();
+	uart1_init(9600);
+	SEI();
+	
+	
+	//p->Kp=0.51;
+	//p->Ki=0.17;
+	//p->Kd=0;	
+	
+	
+	//p->Vsp = 50;
+	
+	
+	
+	while(1)
+	{    
+	     uart1_receive_flag=1;
+		 delay_ms(1000);
+		 
+		 if((app_data[1])&&(0==lock_flag))//¿ªËøÓëÉÏËø
+		   {
+		     lock_close();
+			 lock_flag=1;
+		   }
+		 else if((0==app_data[1])&&(1==lock_flag))
+		   {
+		     lock_open();
+			 lock_flag=0;
+		   }
+		 
+		 if(0==app_data[2])//Æô¶¯Ç°½ø
+		   stop();
+		 if(1==app_data[2])
+		   move();
+		 
+		 if(0==app_data[3])//¶ªÊ§ÅĞ¶Ï
+		   bell_close();
+		 if(1==app_data[3])
+		   bell_open();
+		 
+		
+		//v->Vsp = ((get_num_pulse_1)*5/2);		//ÆÚÍûÖµÈ¡µÚÒ»¸öpwm·µ»ØµÄÕæÊµËÙ¶ÈÖµ
+		//v->Vsp = (get_num_pulse_1*3/2);		//ÆÚÍûÖµÈ¡µÚÒ»¸öpwm·µ»ØµÄÕæÊµËÙ¶ÈÖµ
+		
+		/*if(flag == 5)
+		{
+			p->Vsp = p->Vsp + 10;
+			flag = 0;
+		}
+		if(p->Vsp == 130)
+		{
+			p->Vsp = 0;
+		}*/
+		
+	}
+}

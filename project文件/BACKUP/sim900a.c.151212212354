@@ -1,0 +1,30 @@
+#include "sim900a.h"		
+#include "delay.h"	
+#include "usart0.h"
+#include "string.h"
+#include <iom128v.h>
+
+extern unsigned char longitude[50];
+extern unsigned char latitude[50]; 
+
+unsigned char sim900a_sms_test()
+{
+	//usart0_sent_string("AT+CMGF=1;");
+	//delay_ms(1000);
+	//usart0_sent_string("AT+CSCS=\"GSM\";");
+	//delay_ms(1000);
+	//usart0_sent_string("AT+CMGS=\"13728528286\";");
+	//delay_ms(1000);
+	
+    //usart0_sent_string(longitude);
+	delay_ms(1000);
+	usart0_sent_string("1111,");
+	delay_ms(1000);
+    usart0_sent_char('1');
+	delay_ms(1000);
+	//usart0_sent_char(0X1A);
+	//delay_ms(1000);
+	//usart0_sent_string("");
+	//delay_ms(1000);
+	return 0;
+} 

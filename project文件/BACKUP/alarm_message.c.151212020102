@@ -1,0 +1,11 @@
+#include<iom128v.h>
+void alarm_message()
+{
+	delay_ms(1);
+	data_get();
+	GPS_Analysis(&gpsx,(unsigned char*)data);//分析字符串
+	Gps_Msg_Show();				//显示信息	
+	sim900a_sms_test();
+	clean_data();
+	delay_ms(5000);
+}

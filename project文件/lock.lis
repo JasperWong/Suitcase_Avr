@@ -1,0 +1,56 @@
+                        .module lock.c
+                        .area text(rom, con, rel)
+ 0000                   .dbfile ..\encoder_uart_v4\lock.c
+ 0000                   .dbfile C:\Users\acer\Desktop\ÉñÁú\encoder_uart_v4\lock.c
+ 0000                   .dbfunc e lock_open _lock_open fV
+                        .even
+ 0000           _lock_open::
+ 0000                   .dbline -1
+ 0000                   .dbline 5
+ 0000           ; #include <iom128v.h>
+ 0000           ; #include "lock.h"
+ 0000           ; 
+ 0000           ; void lock_open()
+ 0000           ; {
+ 0000                   .dbline 6
+ 0000           ;    PORTD|=(1<<0);
+ 0000 909A              sbi 0x12,0
+ 0002                   .dbline 7
+ 0002           ;    delay_ms(200);
+ 0002 08EC              ldi R16,200
+ 0004 10E0              ldi R17,0
+ 0006 0E940000          xcall _delay_ms
+ 000A                   .dbline 8
+ 000A           ;    PORTD&=~(1<<0);
+ 000A 9098              cbi 0x12,0
+ 000C                   .dbline -2
+ 000C           L1:
+ 000C                   .dbline 0 ; func end
+ 000C 0895              ret
+ 000E                   .dbend
+ 000E                   .dbfunc e lock_close _lock_close fV
+                        .even
+ 000E           _lock_close::
+ 000E                   .dbline -1
+ 000E                   .dbline 11
+ 000E           ; }
+ 000E           ; void lock_close()
+ 000E           ; {
+ 000E                   .dbline 12
+ 000E           ;    PORTD|=(1<<1);
+ 000E 919A              sbi 0x12,1
+ 0010                   .dbline 13
+ 0010           ;    delay_ms(200);
+ 0010 08EC              ldi R16,200
+ 0012 10E0              ldi R17,0
+ 0014 0E940000          xcall _delay_ms
+ 0018                   .dbline 14
+ 0018           ;    PORTD&=~(1<<1);
+ 0018 9198              cbi 0x12,1
+ 001A                   .dbline -2
+ 001A           L2:
+ 001A                   .dbline 0 ; func end
+ 001A 0895              ret
+ 001C                   .dbend
+ 001C           ; }
+ 001C           ; 

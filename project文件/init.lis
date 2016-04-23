@@ -1,0 +1,170 @@
+                        .module init.c
+                        .area text(rom, con, rel)
+ 0000                   .dbfile ..\encoder_uart_v4\init.c
+ 0000                   .dbfile C:\Users\acer\Desktop\神龙\encoder_uart_v4\init.c
+ 0000                   .dbfunc e ICP_1_init _ICP_1_init fV
+                        .even
+ 0000           _ICP_1_init::
+ 0000                   .dbline -1
+ 0000                   .dbline 4
+ 0000           ; #include <iom128v.h>
+ 0000           ; #include "init.h"
+ 0000           ; void ICP_1_init(void)
+ 0000           ; {
+ 0000                   .dbline 5
+ 0000           ;       TCCR1B |= (1<< ICNC1 );                 //输入捕捉噪声抑制器
+ 0000 8EB5              in R24,0x2e
+ 0002 8068              ori R24,128
+ 0004 8EBD              out 0x2e,R24
+ 0006                   .dbline 6
+ 0006           ;       TCCR1B &= ~(1 << ICES1);                //下降沿触发
+ 0006 8EB5              in R24,0x2e
+ 0008 8F7B              andi R24,191
+ 000A 8EBD              out 0x2e,R24
+ 000C                   .dbline 8
+ 000C           ;       //TCCR1B  |= (1 << CS10) | (1<<CS11);                   //64分频
+ 000C           ;       TCCR1B  |= (1 << CS12);                 //256分频
+ 000C 8EB5              in R24,0x2e
+ 000E 8460              ori R24,4
+ 0010 8EBD              out 0x2e,R24
+ 0012                   .dbline 11
+ 0012           ;       //TCNT1 = 0;
+ 0012           ;       /////////TCNT1 = 34285;                                 //片内8M 1s
+ 0012           ;       TCNT1 = 64285;                                  //片内8M 40ms
+ 0012 8DE1              ldi R24,64285
+ 0014 9BEF              ldi R25,251
+ 0016 9DBD              out 0x2d,R25
+ 0018 8CBD              out 0x2c,R24
+ 001A                   .dbline 16
+ 001A           ;       //TCNT1 = 62410;                                        //片内8M 100ms
+ 001A           ;       //TCNT1 = 49911;                                        //片内1M 1s
+ 001A           ;       //TCNT1 = 15625;                                        //片内1M 1s
+ 001A           ;       
+ 001A           ;       TIMSK |= (1 << TICIE1);                 //捕捉中断有效                                  
+ 001A 87B7              in R24,0x37
+ 001C 8062              ori R24,32
+ 001E 87BF              out 0x37,R24
+ 0020                   .dbline 17
+ 0020           ;       TIMSK &= ~(1 << TOIE1);                 //溢出中断关闭                                  
+ 0020 87B7              in R24,0x37
+ 0022 8B7F              andi R24,251
+ 0024 87BF              out 0x37,R24
+ 0026                   .dbline 19
+ 0026           ; 
+ 0026           ;       TIFR |= (1 << ICF1);                    //捕捉中断标志清除                              
+ 0026 86B7              in R24,0x36
+ 0028 8062              ori R24,32
+ 002A 86BF              out 0x36,R24
+ 002C                   .dbline 22
+ 002C           ;       
+ 002C           ;       /*IO设置*/
+ 002C           ;       PORTD &= ~(1<<PD4);
+ 002C 9498              cbi 0x12,4
+ 002E                   .dbline 23
+ 002E           ;       DDRD &= ~(1<<PD4);
+ 002E 8C98              cbi 0x11,4
+ 0030                   .dbline -2
+ 0030           L1:
+ 0030                   .dbline 0 ; func end
+ 0030 0895              ret
+ 0032                   .dbend
+ 0032                   .dbfunc e ICP_2_init _ICP_2_init fV
+                        .even
+ 0032           _ICP_2_init::
+ 0032                   .dbline -1
+ 0032                   .dbline 28
+ 0032           ;        
+ 0032           ; }
+ 0032           ; 
+ 0032           ; void ICP_2_init(void)
+ 0032           ; {
+ 0032                   .dbline 29
+ 0032           ;     TCCR2|=(1<<CS22)|(1<<CS20);//1024分频普通模式
+ 0032 85B5              in R24,0x25
+ 0034 8560              ori R24,5
+ 0036 85BD              out 0x25,R24
+ 0038                   .dbline 30
+ 0038           ;       TIMSK|=(1<<TOIE2);//定时计数器2溢出中断 
+ 0038 87B7              in R24,0x37
+ 003A 8064              ori R24,64
+ 003C 87BF              out 0x37,R24
+ 003E                   .dbline 31
+ 003E           ;       TCNT2=55;
+ 003E 87E3              ldi R24,55
+ 0040 84BD              out 0x24,R24
+ 0042                   .dbline -2
+ 0042           L2:
+ 0042                   .dbline 0 ; func end
+ 0042 0895              ret
+ 0044                   .dbend
+ 0044                   .dbfunc e ICP_3_init _ICP_3_init fV
+                        .even
+ 0044           _ICP_3_init::
+ 0044                   .dbline -1
+ 0044                   .dbline 36
+ 0044           ;       
+ 0044           ; }
+ 0044           ; 
+ 0044           ; void ICP_3_init(void)
+ 0044           ; {
+ 0044                   .dbline 37
+ 0044           ;       TCCR3B |= (1<< ICNC3 );                 //输入捕捉噪声抑制器
+ 0044 80918A00          lds R24,138
+ 0048 8068              ori R24,128
+ 004A 80938A00          sts 138,R24
+ 004E                   .dbline 38
+ 004E           ;       TCCR3B &= ~(1 << ICES3);                //下降沿触发
+ 004E 80918A00          lds R24,138
+ 0052 8F7B              andi R24,191
+ 0054 80938A00          sts 138,R24
+ 0058                   .dbline 40
+ 0058           ;       //TCCR1B  |= (1 << CS10) | (1<<CS11);                   //64分频
+ 0058           ;       TCCR1B  |= (1 << CS32);                 //256分频
+ 0058 8EB5              in R24,0x2e
+ 005A 8460              ori R24,4
+ 005C 8EBD              out 0x2e,R24
+ 005E                   .dbline 43
+ 005E           ;       //TCNT1 = 0;
+ 005E           ;       /////////TCNT1 = 34285;                                 //片内8M 1s
+ 005E           ;       TCNT1 = 64285;                                  //片内8M 40ms
+ 005E 8DE1              ldi R24,64285
+ 0060 9BEF              ldi R25,251
+ 0062 9DBD              out 0x2d,R25
+ 0064 8CBD              out 0x2c,R24
+ 0066                   .dbline 48
+ 0066           ;       //TCNT1 = 62410;                                        //片内8M 100ms
+ 0066           ;       //TCNT1 = 49911;                                        //片内1M 1s
+ 0066           ;       //TCNT1 = 15625;                                        //片内1M 1s
+ 0066           ;       
+ 0066           ;       ETIMSK |= (1 << TICIE3);                        //捕捉中断有效                                  
+ 0066 80917D00          lds R24,125
+ 006A 8062              ori R24,32
+ 006C 80937D00          sts 125,R24
+ 0070                   .dbline 49
+ 0070           ;       ETIMSK &= ~(1 << TOIE3);                        //溢出中断关闭                                  
+ 0070 80917D00          lds R24,125
+ 0074 8B7F              andi R24,251
+ 0076 80937D00          sts 125,R24
+ 007A                   .dbline 51
+ 007A           ; 
+ 007A           ;       ETIFR |= (1 << ICF3);                   //捕捉中断标志清除                              
+ 007A 80917C00          lds R24,124
+ 007E 8062              ori R24,32
+ 0080 80937C00          sts 124,R24
+ 0084                   .dbline 54
+ 0084           ;       
+ 0084           ;       /*IO设置*/
+ 0084           ;       PORTE &= ~(1<<PE7);
+ 0084 1F98              cbi 0x3,7
+ 0086                   .dbline 55
+ 0086           ;       DDRE &= ~(1<<PE7);
+ 0086 1798              cbi 0x2,7
+ 0088                   .dbline -2
+ 0088           L3:
+ 0088                   .dbline 0 ; func end
+ 0088 0895              ret
+ 008A                   .dbend
+ 008A           ;        
+ 008A           ; }
+ 008A           ; 
+ 008A           ; 

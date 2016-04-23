@@ -1,0 +1,137 @@
+XL
+H 2 areas C global symbols
+M uart.c
+S mod16s Ref0000
+S div32s Ref0000
+S div16s Ref0000
+S push_xgsetF00C Ref0000
+S pop_xgsetF00C Ref0000
+A text size 12A flags 0
+dbfile ..\encoder_uart_v4\uart.c
+dbfile C:\Users\acer\Desktop\ÉñÁú\encoder_uart_v4\uart.c
+dbfunc e uart_init 0 fV
+dbsym r baud A i
+dbline FFFFFFFF 6
+dbline F 6
+dbline 10 6
+dbline 12 C
+dbline 13 40
+dbline 14 42
+dbline 15 4A
+dbline 17 4E
+dbline FFFFFFFE 50
+dbline 0 50
+dbfunc e uart1_init 54 fV
+dbsym r baud A i
+dbline FFFFFFFF 5A
+dbline 1A 5A
+dbline 1B 5A
+dbline 1D 60
+dbline 1E 94
+dbline 1F 98
+dbline 20 A0
+dbline 21 A6
+dbline 22 A8
+dbline FFFFFFFE AA
+dbline 0 AA
+dbfunc e uart0_transmit AE fV
+dbsym r i 10 c
+dbline FFFFFFFF AE
+dbline 2C AE
+dbline 2E AE
+dbline 2E AE
+dbline 2F B2
+dbline FFFFFFFE B4
+dbline 0 B4
+dbfunc e sent B6 fV
+dbsym r number A I
+dbline FFFFFFFF BC
+dbline 3D BC
+dbline 3E BC
+dbline 3F C8
+dbline 40 D4
+dbline 41 DE
+dbline 42 EA
+dbline 43 F4
+dbline 44 100
+dbline FFFFFFFE 102
+dbline 0 102
+dbfunc e uart0_str 108 fV
+dbsym l i 1 c
+dbsym r p 10 pc
+dbline FFFFFFFF 108
+dbline 63 108
+dbline 67 10A
+dbline 67 10A
+dbline 68 10E
+dbline 69 114
+dbline 6A 118
+dbline 65 118
+dbline FFFFFFFE 120
+dbline 0 120
+dbfunc e uart0_receive 122 fc
+dbline FFFFFFFF 122
+dbline 75 122
+dbline 77 122
+dbline 77 122
+dbline 78 126
+dbline FFFFFFFE 128
+dbline 0 128
+S _uart0_str Def0108
+S _sent Def00B6
+S _uart0_transmit Def00AE
+S _uart_init Def0000
+S _uart1_init Def0054
+S _uart0_receive Def0122
+A bss size 4 flags 20
+dbfile C:\Users\acer\Desktop\ÉñÁú\encoder_uart_v4\uart.c
+dbsym e num 0 A[4:4]c
+S _num Def0000
+T 00 00 0E 94 00 00 58 01 86 E0 80 93 95 00 15 01
+R 00 00 00 00 12 04 03 00
+T 0E 00 44 24 55 24 40 E2 51 EA 67 E0 70 E0 5A 92
+R 00 00 00 00
+T 1C 00 4A 92 3A 92 2A 92 8A 01 9B 01 0E 94 00 00
+R 00 00 00 00 12 0E 01 00
+T 2A 00 41 E0 50 E0 60 E0 70 E0 18 01 29 01 24 1A
+R 00 00 00 00
+T 38 00 35 0A 46 0A 57 0A 51 01 29 B8 23 2C 33 24
+R 00 00 00 00
+T 46 00 20 92 90 00 88 E1 8A B9 11 9A 0C 94 00 00
+R 00 00 00 00 12 0E 04 00
+T 54 00 0E 94 00 00 58 01 86 E0 80 93 9D 00 15 01
+R 00 00 00 00 12 04 03 00
+T 62 00 44 24 55 24 40 E2 51 EA 67 E0 70 E0 5A 92
+R 00 00 00 00
+T 70 00 4A 92 3A 92 2A 92 8A 01 9B 01 0E 94 00 00
+R 00 00 00 00 12 0E 01 00
+T 7E 00 41 E0 50 E0 60 E0 70 E0 18 01 29 01 24 1A
+R 00 00 00 00
+T 8C 00 35 0A 46 0A 57 0A 51 01 A0 92 99 00 23 2C
+R 00 00 00 00
+T 9A 00 33 24 20 92 98 00 88 E9 80 93 9A 00 78 94
+R 00 00 00 00
+T A8 00 8B 9A 0C 94 00 00
+R 00 00 00 00 12 06 04 00
+T AE 00 5D 9B FE CF 0C B9 08 95
+R 00 00 00 00
+T B6 00 AA 92 BA 92 58 01 28 EE 33 E0 85 01
+R 00 00 00 00
+T C2 00 0E 94 00 00 F3 DF 28 EE 33 E0 85 01
+R 00 00 00 00 12 04 02 00
+T CE 00 0E 94 00 00 58 01 24 E6 30 E0 0E 94 00 00
+R 00 00 00 00 12 04 00 00 12 0E 02 00
+T DC 00 E8 DF 24 E6 30 E0 85 01 0E 94 00 00 58 01
+R 00 00 00 00 12 0C 00 00
+T EA 00 2A E0 30 E0 0E 94 00 00 DD DF 2A E0 30 E0
+R 00 00 00 00 12 08 02 00
+T F8 00 85 01 0E 94 00 00 58 01 D6 DF B9 90 A9 90
+R 00 00 00 00 12 06 00 00
+T 06 01 08 95
+R 00 00 00 00
+T 08 01 07 C0 5D 9B FE CF F8 01 20 80 2C B8 0F 5F
+R 00 00 00 00
+T 16 01 1F 4F F8 01 80 81 8D 30 A9 F7 08 95
+R 00 00 00 00
+T 22 01 5F 9B FE CF 0C B1 08 95
+R 00 00 00 00

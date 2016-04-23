@@ -1,0 +1,134 @@
+                        .module sim900a.c
+                        .area text(rom, con, rel)
+ 0000                   .dbfile ..\encoder_uart_v4\sim900a.c
+ 0000                   .dbfile C:\Users\JasperWong\OneDrive\suitcase\神龙最终\encoder_uart_v4\sim900a.c
+ 0000                   .dbfunc e sim900a_sms_test _sim900a_sms_test fc
+                        .even
+ 0000           _sim900a_sms_test::
+ 0000                   .dbline -1
+ 0000                   .dbline 11
+ 0000           ; #include "sim900a.h"          
+ 0000           ; #include "delay.h"    
+ 0000           ; #include "usart0.h"
+ 0000           ; #include "string.h"
+ 0000           ; #include <iom128v.h>
+ 0000           ; 
+ 0000           ; extern unsigned char longitude[50];
+ 0000           ; extern unsigned char latitude[50]; 
+ 0000           ; 
+ 0000           ; unsigned char sim900a_sms_test()
+ 0000           ; {
+ 0000                   .dbline 13
+ 0000           ; 
+ 0000           ;     usart0_sent_string("AT+CMGF=1-");
+ 0000 00E0              ldi R16,<L2
+ 0002 10E0              ldi R17,>L2
+ 0004 0E940000          xcall _usart0_sent_string
+ 0008                   .dbline 14
+ 0008           ;       usart0_sent_char('\r');
+ 0008 0DE0              ldi R16,13
+ 000A 0E940000          xcall _usart0_sent_char
+ 000E                   .dbline 15
+ 000E           ;     usart0_sent_char('\n');
+ 000E 0AE0              ldi R16,10
+ 0010 0E940000          xcall _usart0_sent_char
+ 0014                   .dbline 16
+ 0014           ;       delay_ms(1000);
+ 0014 08EE              ldi R16,1000
+ 0016 13E0              ldi R17,3
+ 0018 0E940000          xcall _delay_ms
+ 001C                   .dbline 17
+ 001C           ;       usart0_sent_string("AT+CSCS=\"GSM\"-");
+ 001C 00E0              ldi R16,<L3
+ 001E 10E0              ldi R17,>L3
+ 0020 0E940000          xcall _usart0_sent_string
+ 0024                   .dbline 18
+ 0024           ;       usart0_sent_char('\r');
+ 0024 0DE0              ldi R16,13
+ 0026 0E940000          xcall _usart0_sent_char
+ 002A                   .dbline 19
+ 002A           ;     usart0_sent_char('\n');
+ 002A 0AE0              ldi R16,10
+ 002C 0E940000          xcall _usart0_sent_char
+ 0030                   .dbline 20
+ 0030           ;       delay_ms(1000);
+ 0030 08EE              ldi R16,1000
+ 0032 13E0              ldi R17,3
+ 0034 0E940000          xcall _delay_ms
+ 0038                   .dbline 21
+ 0038           ;       usart0_sent_string("AT+CMGS=\"18520287074\"-");
+ 0038 00E0              ldi R16,<L4
+ 003A 10E0              ldi R17,>L4
+ 003C 0E940000          xcall _usart0_sent_string
+ 0040                   .dbline 22
+ 0040           ;       usart0_sent_char('\r');
+ 0040 0DE0              ldi R16,13
+ 0042 0E940000          xcall _usart0_sent_char
+ 0046                   .dbline 23
+ 0046           ;     usart0_sent_char('\n');
+ 0046 0AE0              ldi R16,10
+ 0048 0E940000          xcall _usart0_sent_char
+ 004C                   .dbline 24
+ 004C           ;       delay_ms(1000);
+ 004C 08EE              ldi R16,1000
+ 004E 13E0              ldi R17,3
+ 0050 0E940000          xcall _delay_ms
+ 0054                   .dbline 28
+ 0054           ;       //usart0_sent_string(longitude);
+ 0054           ;       //usart0_sent_char(',');
+ 0054           ;       //usart0_sent_string(latitude);
+ 0054           ;       usart0_sent_string("23.05299 N , 113.39370 E");
+ 0054 00E0              ldi R16,<L5
+ 0056 10E0              ldi R17,>L5
+ 0058 0E940000          xcall _usart0_sent_string
+ 005C                   .dbline 29
+ 005C           ;       usart0_sent_char(0x1a);
+ 005C 0AE1              ldi R16,26
+ 005E 0E940000          xcall _usart0_sent_char
+ 0062                   .dbline 30
+ 0062           ;       usart0_sent_char('\r');
+ 0062 0DE0              ldi R16,13
+ 0064 0E940000          xcall _usart0_sent_char
+ 0068                   .dbline 31
+ 0068           ;     usart0_sent_char('\n');
+ 0068 0AE0              ldi R16,10
+ 006A 0E940000          xcall _usart0_sent_char
+ 006E                   .dbline 34
+ 006E           ;       
+ 006E           ;       
+ 006E           ;       return 0;
+ 006E 0027              clr R16
+ 0070                   .dbline -2
+ 0070           L1:
+ 0070                   .dbline 0 ; func end
+ 0070 0895              ret
+ 0072                   .dbend
+                        .area data(ram, con, rel)
+ 0000                   .dbfile C:\Users\JasperWong\OneDrive\suitcase\神龙最终\encoder_uart_v4\sim900a.c
+ 0000           L5:
+ 0000                   .blkb 25
+                        .area idata
+ 0000 32332E3035323939204E202C20313133  .byte 50,51,46,48,53,50,57,57,32,'N,32,44,32,49,49,51
+ 0010 2E3339333730204500        .byte 46,51,57,51,55,48,32,'E,0
+                        .area data(ram, con, rel)
+ 0019                   .dbfile C:\Users\JasperWong\OneDrive\suitcase\神龙最终\encoder_uart_v4\sim900a.c
+ 0019           L4:
+ 0019                   .blkb 23
+                        .area idata
+ 0019 41542B434D47533D2231383532303238  .byte 'A,'T,43,'C,'M,'G,'S,61,34,49,56,53,50,48,50,56
+ 0029 37303734222D00    .byte 55,48,55,52,34,45,0
+                        .area data(ram, con, rel)
+ 0030                   .dbfile C:\Users\JasperWong\OneDrive\suitcase\神龙最终\encoder_uart_v4\sim900a.c
+ 0030           L3:
+ 0030                   .blkb 15
+                        .area idata
+ 0030 41542B435343533D2247534D222D00    .byte 'A,'T,43,'C,'S,'C,'S,61,34,'G,'S,'M,34,45,0
+                        .area data(ram, con, rel)
+ 003F                   .dbfile C:\Users\JasperWong\OneDrive\suitcase\神龙最终\encoder_uart_v4\sim900a.c
+ 003F           L2:
+ 003F                   .blkb 11
+                        .area idata
+ 003F 41542B434D47463D312D00    .byte 'A,'T,43,'C,'M,'G,'F,61,49,45,0
+                        .area data(ram, con, rel)
+ 004A                   .dbfile C:\Users\JasperWong\OneDrive\suitcase\神龙最终\encoder_uart_v4\sim900a.c
+ 004A           ; } 

@@ -1,0 +1,25 @@
+#include<iom128v.h>
+#include "gps.h"
+#include "alarm_message.h"
+#include "encoder.h"
+#include "data_get.h"
+#include "sim900a.h"
+#include "usart0.h"
+
+extern unsigned char data[500];
+extern nmea_msg gpsx; 		
+
+extern unsigned char longitude[50];
+void alarm_mes()
+{
+   unsigned int n;
+	delay_ms(1);
+	
+	
+	data_get();
+	GPS_Analysis(&gpsx,(unsigned char*)data);//分析字符串
+	Gps_Msg_Show();				//显示信息	
+	sim900a_sms_test();
+	clean_data();
+	delay_ms(5000);
+}

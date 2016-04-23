@@ -1,0 +1,73 @@
+XL
+H 3 areas 4 global symbols
+M sim900a.c
+S _delay_ms Ref0000
+S _usart0_sent_string Ref0000
+S _usart0_sent_char Ref0000
+A text size 72 flags 0
+dbfile ..\encoder_uart_v4\sim900a.c
+dbfile C:\Users\JasperWong\OneDrive\suitcase\神龙最终\encoder_uart_v4\sim900a.c
+dbfunc e sim900a_sms_test 0 fc
+dbline FFFFFFFF 0
+dbline B 0
+dbline D 0
+dbline E 8
+dbline F E
+dbline 10 14
+dbline 11 1C
+dbline 12 24
+dbline 13 2A
+dbline 14 30
+dbline 15 38
+dbline 16 40
+dbline 17 46
+dbline 18 4C
+dbline 1C 54
+dbline 1D 5C
+dbline 1E 62
+dbline 1F 68
+dbline 22 6E
+dbline FFFFFFFE 70
+dbline 0 70
+S _sim900a_sms_test Def0000
+A data size 4A flags 20
+dbfile C:\Users\JasperWong\OneDrive\suitcase\神龙最终\encoder_uart_v4\sim900a.c
+A idata size 4A flags 0
+T 00 00 00 E0 10 E0
+R 00 00 00 00 20 02 01 00 3F 00 40 04 01 00 3F 00
+T 04 00 0E 94 00 00 0D E0 0E 94 00 00 0A E0
+R 00 00 00 00 12 04 01 00 12 0A 02 00
+T 10 00 0E 94 00 00 08 EE 13 E0 0E 94 00 00
+R 00 00 00 00 12 04 02 00 12 0C 00 00
+T 1C 00 00 E0 10 E0
+R 00 00 00 00 20 02 01 00 30 00 40 04 01 00 30 00
+T 20 00 0E 94 00 00 0D E0 0E 94 00 00 0A E0
+R 00 00 00 00 12 04 01 00 12 0A 02 00
+T 2C 00 0E 94 00 00 08 EE 13 E0 0E 94 00 00
+R 00 00 00 00 12 04 02 00 12 0C 00 00
+T 38 00 00 E0 10 E0
+R 00 00 00 00 20 02 01 00 19 00 40 04 01 00 19 00
+T 3C 00 0E 94 00 00 0D E0 0E 94 00 00 0A E0
+R 00 00 00 00 12 04 01 00 12 0A 02 00
+T 48 00 0E 94 00 00 08 EE 13 E0 0E 94 00 00
+R 00 00 00 00 12 04 02 00 12 0C 00 00
+T 54 00 00 E0 10 E0
+R 00 00 00 00 20 02 01 00 00 00 40 04 01 00 00 00
+T 58 00 0E 94 00 00 0A E1 0E 94 00 00 0D E0
+R 00 00 00 00 12 04 01 00 12 0A 02 00
+T 64 00 0E 94 00 00 0A E0 0E 94 00 00 00 27 08 95
+R 00 00 00 00 12 04 02 00 12 0A 02 00
+T 00 00 32 33 2E 30 35 32 39 39 20 4E 20 2C 20 31
+R 00 00 02 00
+T 0E 00 31 33 2E 33 39 33 37 30 20 45 00
+R 00 00 02 00
+T 19 00 41 54 2B 43 4D 47 53 3D 22 31 38 35 32 30
+R 00 00 02 00
+T 27 00 32 38 37 30 37 34 22 2D 00
+R 00 00 02 00
+T 30 00 41 54 2B 43 53 43 53 3D 22 47 53 4D 22 2D
+R 00 00 02 00
+T 3E 00 00
+R 00 00 02 00
+T 3F 00 41 54 2B 43 4D 47 46 3D 31 2D 00
+R 00 00 02 00

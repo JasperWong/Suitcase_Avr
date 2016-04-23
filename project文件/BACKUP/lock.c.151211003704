@@ -1,0 +1,14 @@
+#include <iom128v.h>
+
+void lock_open()
+{
+   PORTD|=0b00000001;
+   delay_ms(70);
+   PORTD&=~0b00000001;
+}
+void lock_close()
+{
+   PORTD|=0b00000010;
+   delay_ms(70);
+   PORTD&=~0b00000010;
+}

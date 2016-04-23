@@ -1,0 +1,29 @@
+XL
+H 1 areas 3 global symbols
+M lock.c
+S _delay_ms Ref0000
+A text size 1C flags 0
+dbfile ..\encoder_uart_v4\lock.c
+dbfile C:\Users\acer\Desktop\ÉñÁú\encoder_uart_v4\lock.c
+dbfunc e lock_open 0 fV
+dbline FFFFFFFF 0
+dbline 5 0
+dbline 6 0
+dbline 7 2
+dbline 8 A
+dbline FFFFFFFE C
+dbline 0 C
+dbfunc e lock_close E fV
+dbline FFFFFFFF E
+dbline B E
+dbline C E
+dbline D 10
+dbline E 18
+dbline FFFFFFFE 1A
+dbline 0 1A
+S _lock_open Def0000
+S _lock_close Def000E
+T 00 00 90 9A 08 EC 10 E0 0E 94 00 00 90 98 08 95
+R 00 00 00 00 12 0A 00 00
+T 0E 00 91 9A 08 EC 10 E0 0E 94 00 00 91 98 08 95
+R 00 00 00 00 12 0A 00 00

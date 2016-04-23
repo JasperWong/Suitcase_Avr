@@ -1,0 +1,19 @@
+#include <iom128v.h>
+#include <string.h>
+#include "usart0.h"
+
+void usart0_sent_char(unsigned char data)
+{
+	while(!(UCSR0A&(1<<UDRE0))) ;
+	UDR0 = data;
+}
+
+void usart0_sent_string(unsigned char *data)
+{
+	while(*data!='-')
+	{
+		usart0_sent_char(*data);
+		data++;
+	}
+}
+

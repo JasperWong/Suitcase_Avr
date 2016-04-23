@@ -1,0 +1,35 @@
+XL
+H 1 areas 2 global symbols
+M pwm.c
+A text size 38 flags 0
+dbfile ..\encoder_uart_v4\pwm.c
+dbfile C:\Users\acer\Desktop\ÉñÁú\encoder_uart_v4\pwm.c
+dbfunc e io_init 0 fV
+dbline FFFFFFFF 0
+dbline 5 0
+dbline 6 0
+dbline 7 4
+dbline 8 6
+dbline 9 8
+dbline A A
+dbline FFFFFFFE C
+dbline 0 C
+dbfunc e t3_init E fV
+dbline FFFFFFFF E
+dbline 14 E
+dbline 15 E
+dbline 16 18
+dbline 17 22
+dbline 18 2E
+dbline FFFFFFFE 36
+dbline 0 36
+S _t3_init Def000E
+S _io_init Def0000
+T 00 00 8F EF 82 B9 8A BB 81 BB 8A 98 92 9A 08 95
+R 00 00 00 00
+T 0E 00 80 91 8B 00 89 6A 80 93 8B 00 80 91 8A 00
+R 00 00 00 00
+T 1C 00 89 60 80 93 8A 00 22 24 33 24 30 92 87 00
+R 00 00 00 00
+T 2A 00 20 92 86 00 30 92 85 00 20 92 84 00 08 95
+R 00 00 00 00

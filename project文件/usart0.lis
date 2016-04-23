@@ -1,0 +1,79 @@
+                        .module usart0.c
+                        .area text(rom, con, rel)
+ 0000                   .dbfile ..\encoder_uart_v4\usart0.c
+ 0000                   .dbfile C:\Users\acer\Desktop\ÉñÁú\encoder_uart_v4\usart0.c
+ 0000                   .dbfunc e usart0_sent_char _usart0_sent_char fV
+ 0000           ;           data -> R16
+                        .even
+ 0000           _usart0_sent_char::
+ 0000                   .dbline -1
+ 0000                   .dbline 6
+ 0000           ; #include <iom128v.h>
+ 0000           ; #include <string.h>
+ 0000           ; #include "usart0.h"
+ 0000           ; 
+ 0000           ; void usart0_sent_char(unsigned char data)
+ 0000           ; {
+ 0000           L2:
+ 0000                   .dbline 7
+ 0000           ;       while(!(UCSR0A&(1<<UDRE0))) ;
+ 0000           L3:
+ 0000                   .dbline 7
+ 0000 5D9B              sbis 0xb,5
+ 0002 FECF              rjmp L2
+ 0004           X0:
+ 0004                   .dbline 8
+ 0004           ;       UDR0 = data;
+ 0004 0CB9              out 0xc,R16
+ 0006                   .dbline -2
+ 0006           L1:
+ 0006                   .dbline 0 ; func end
+ 0006 0895              ret
+ 0008                   .dbsym r data 16 c
+ 0008                   .dbend
+ 0008                   .dbfunc e usart0_sent_string _usart0_sent_string fV
+ 0008           ;           data -> R20,R21
+                        .even
+ 0008           _usart0_sent_string::
+ 0008 4A93              st -y,R20
+ 000A 5A93              st -y,R21
+ 000C A801              movw R20,R16
+ 000E                   .dbline -1
+ 000E                   .dbline 12
+ 000E           ; }
+ 000E           ; 
+ 000E           ; void usart0_sent_string(unsigned char *data)
+ 000E           ; {
+ 000E 05C0              xjmp L7
+ 0010           L6:
+ 0010                   .dbline 14
+ 0010           ;       while(*data!='-')
+ 0010           ;       {
+ 0010                   .dbline 15
+ 0010           ;               usart0_sent_char(*data);
+ 0010 FA01              movw R30,R20
+ 0012 0081              ldd R16,z+0
+ 0014 F5DF              xcall _usart0_sent_char
+ 0016                   .dbline 16
+ 0016           ;               data++;
+ 0016 4F5F              subi R20,255  ; offset = 1
+ 0018 5F4F              sbci R21,255
+ 001A                   .dbline 17
+ 001A           ;       }
+ 001A           L7:
+ 001A                   .dbline 13
+ 001A FA01              movw R30,R20
+ 001C 8081              ldd R24,z+0
+ 001E 8D32              cpi R24,45
+ 0020 B9F7              brne L6
+ 0022           X1:
+ 0022                   .dbline -2
+ 0022           L5:
+ 0022                   .dbline 0 ; func end
+ 0022 5991              ld R21,y+
+ 0024 4991              ld R20,y+
+ 0026 0895              ret
+ 0028                   .dbsym r data 20 pc
+ 0028                   .dbend
+ 0028           ; }
+ 0028           ; 

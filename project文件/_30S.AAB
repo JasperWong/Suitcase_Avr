@@ -1,0 +1,1 @@
+-g -MLongJump -MHasMul -MEnhanced -use_elpm -l..\encoder_uart_v4\data_get.c data_get.i data_get.s 

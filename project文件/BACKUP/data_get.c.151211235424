@@ -1,0 +1,7 @@
+#include <iom128v.h>
+extern unsigned char data[500];
+extern unsigned char data_rec_done_flag;
+void data_get()
+{
+  
+}
